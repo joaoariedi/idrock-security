@@ -1,6 +1,6 @@
 # IDROCK Security System - Complete Demonstration Guide
 
-This guide provides step-by-step instructions to demonstrate the complete IDROCK security system workflow, from NexShop user registration through IDROCK risk assessment and history tracking.
+This guide provides step-by-step instructions to demonstrate the complete IDROCK security system workflow, from NexShop user registration through IDROCK risk assessment and history tracking. The guide is synchronized with the automated demo script to ensure consistency between manual and automated testing.
 
 ## Automated Demo Script
 
@@ -11,7 +11,7 @@ For a complete automated demonstration, use the included demo script:
 poetry run python demo-script.py
 ```
 
-The automated script performs all the steps below with colorful output and comprehensive testing. For manual testing, follow the individual steps in this guide.
+The automated script performs all the steps below with colorful output, comprehensive testing, and real-time progress tracking. It includes automatic service health checking, dynamic user generation, and detailed risk factor analysis. For manual testing, follow the individual steps in this guide.
 
 ## System Architecture Overview
 
@@ -84,7 +84,7 @@ curl -X GET "http://localhost:3000/health" \
 The demo script generates a unique demo user for each run. For manual testing, register a user:
 
 ```bash
-# Demo script uses dynamic usernames like: demouserab123cd8
+# Demo script uses dynamic usernames like: demouser12345678
 # For manual testing, use any unique username:
 curl -X POST "http://localhost:3000/api/auth/register" \
   -H "Content-Type: application/json" \
@@ -414,7 +414,7 @@ curl -X POST "http://localhost:3000/api/auth/login" \
 
 ### Step 5: Security History and Statistics
 
-The demo script displays comprehensive security analytics including recent assessments and system statistics:
+The demo script displays comprehensive security analytics including recent assessments, risk distribution, confidence scores, and both IDROCK and NexShop integration statistics:
 
 #### Get Recent Assessments for Demo User
 
@@ -661,14 +661,24 @@ For testing purposes, use these IP ranges:
 
 ### Step 6: API Documentation Access
 
-The demo script also verifies that API documentation is available:
+The demo script verifies that both Swagger UI and OpenAPI specifications are available:
 
 ```bash
-# Check Swagger UI availability
+# Check Swagger UI availability (returns HTML)
 curl -X GET "http://localhost:8000/docs" 
 
-# Get OpenAPI specification
+# Get OpenAPI specification with API details
 curl -X GET "http://localhost:8000/openapi.json" | jq
+
+# Expected OpenAPI Response includes:
+# {
+#   "openapi": "3.1.0",
+#   "info": {
+#     "title": "IDROCK Security Service API",
+#     "version": "1.0.0-mvp"
+#   },
+#   "paths": { ... endpoint definitions ... }
+# }
 ```
 
 ---
@@ -706,11 +716,13 @@ The automated demo script performs all steps above with:
 ## Demo Script vs Manual Testing
 
 **Use the demo script** (`poetry run python demo-script.py`) for:
-- Complete automated testing workflow
-- Colorful, easy-to-follow output
-- Automatic error handling and retries
-- Comprehensive success/failure reporting
+- Complete automated testing workflow with 6 comprehensive steps
+- Colorful, easy-to-follow output with success/warning/error indicators
+- Automatic service health checking (waits up to 60 seconds)
+- Dynamic test user generation for isolated testing
+- Comprehensive success/failure reporting with troubleshooting guidance
 - No manual curl command management
+- Real-time progress tracking and detailed analysis
 
 **Use manual testing** (this guide) for:
 - Understanding individual API endpoints
