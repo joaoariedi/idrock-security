@@ -84,7 +84,7 @@ curl -X GET "http://localhost:3000/health" \
 The demo script generates a unique demo user for each run. For manual testing, register a user:
 
 ```bash
-# Demo script uses dynamic usernames like: demouser12345678
+# Demo script uses dynamic usernames like: demouserab123cd8
 # For manual testing, use any unique username:
 curl -X POST "http://localhost:3000/api/auth/register" \
   -H "Content-Type: application/json" \
@@ -102,8 +102,8 @@ curl -X POST "http://localhost:3000/api/auth/register" \
 #   "message": "User registered successfully",
 #   "user": {
 #     "id": "user_12345",
-#     "username": "demo_user",
-#     "email": "demo@idrock.com",
+#     "username": "demo_user_manual",
+#     "email": "manual_demo@idrock.com",
 #     "first_name": "Demo",
 #     "last_name": "User"
 #   },
