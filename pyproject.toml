@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "idrock-validation"
+version = "1.0.0"
+description = "IDROCK validation and testing utilities"
+authors = ["IDROCK Team"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.31.0"
+colorama = "^0.4.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
