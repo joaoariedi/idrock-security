@@ -1,18 +1,10 @@
-# IDROCK Security System - Git Ignore Configuration
+# IDROCK Security Demo Repository - Git Ignore File
 
-# ============================================================================
 # Python
-# ============================================================================
-
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -33,75 +25,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# PEP 582
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
+# Virtual Environments
 .env
 .venv
 env/
@@ -109,406 +33,94 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.python-version
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# Poetry
+poetry.lock
 
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# ============================================================================
 # Node.js
-# ============================================================================
-
-# Logs
-logs
-*.log
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
+package-lock.json
+yarn.lock
 
-# Diagnostic reports
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Grunt intermediate storage
-.grunt
-
-# Bower dependency directory
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons
-build/Release
-
-# Dependency directories
-node_modules/
-jspm_packages/
-
-# TypeScript v1 declaration files
-typings/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
+# Environment Variables
 .env
-.env.test
-.env.production
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
-# parcel-bundler cache
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Gatsby files
-.cache/
-public
-
-# Vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# ============================================================================
-# Docker
-# ============================================================================
-
-# Docker volumes and data
-docker-data/
-data/
-postgres-data/
-mongo-data/
-redis-data/
-
-# Docker Compose overrides
-docker-compose.override.yml
-
-# ============================================================================
-# Databases
-# ============================================================================
-
-# SQLite
+# Database
+*.db
 *.sqlite
 *.sqlite3
-*.db
+data/
+db/
 
-# PostgreSQL
-*.pgsql
+# Logs
+logs/
+*.log
+log/
 
-# MySQL
-*.mysql
+# Docker
+.dockerignore
 
-# MongoDB
-*.bson
-
-# Redis
-*.rdb
-
-# ============================================================================
-# IDE and Editor Files
-# ============================================================================
-
-# Visual Studio Code
+# IDE/Editor Files
 .vscode/
-*.code-workspace
-
-# JetBrains IDEs
 .idea/
-*.iml
-*.ipr
-*.iws
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# Vim
 *.swp
 *.swo
 *~
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Atom
-.atom/
-
-# ============================================================================
-# Operating System Files
-# ============================================================================
-
-# macOS
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon?
-._*
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# Windows
 Thumbs.db
-Thumbs.db:encryptable
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 ehthumbs.db
-ehthumbs_vista.db
-*.tmp
-*.temp
-Desktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-*.lnk
+Thumbs.db
 
-# Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs*
-
-# ============================================================================
-# Security and Configuration
-# ============================================================================
-
-# Environment files
-.env*
-!.env.example
-!.env.template
-
-# Claude configuration (user-specific)
-.claude/
-
-# SSH keys
-*.pem
-*.key
-*.pub
-
-# SSL certificates
-*.crt
-*.cer
-*.p12
-*.pfx
-
-# Security configs
-secrets/
-config/secrets/
-
-# API keys and tokens
-.secrets
-apikeys.txt
-tokens.txt
-
-# ============================================================================
-# Logs and Temporary Files
-# ============================================================================
-
-# Application logs
-*.log
-logs/
-log/
-
-# Temporary files
+# Temporary Files
 tmp/
 temp/
-.tmp/
-.temp/
-
-# Backup files
+*.tmp
+*.temp
 *.backup
 *.bak
-*.orig
 
-# ============================================================================
-# Build and Cache Directories
-# ============================================================================
+# Security and Secrets
+*.pem
+*.key
+*.crt
+*.cert
+secrets/
+.secrets/
 
-# Build outputs
-build/
-dist/
-out/
-
-# Cache directories
+# Cache
 .cache/
-cache/
-
-# Dependency lock files (keep package.json, pyproject.toml)
-package-lock.json
-yarn.lock
-poetry.lock
-
-# ============================================================================
-# Project Specific
-# ============================================================================
-
-# Demo and test data
-demo-data/
-test-data/
-sample-data/
-
-# Documentation builds (keep source .md files)
-docs/build/
-documentation/build/
-
-# Analysis and reports
-reports/
-analysis/
-
-# Benchmarks
-benchmarks/results/
-
-# Coverage reports
-coverage/
+.pytest_cache/
+.coverage
 htmlcov/
 
-# ============================================================================
-# Archive and Compressed Files
-# ============================================================================
+# Project Planning (keeping essential docs but removing planning artifacts)
+PLAN_*.md
 
-# Archives
-*.zip
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.rar
-*.7z
+# Demo Runtime
+demo_users.txt
+test_data/
+*.session
 
-# ============================================================================
-# Media Files (if not needed for demo)
-# ============================================================================
+# Docker Volumes and Build Context
+docker-data/
+volumes/
 
-# Images (uncomment if not needed)
-# *.jpg
-# *.jpeg
-# *.png
-# *.gif
-# *.bmp
-# *.svg
-
-# Videos (uncomment if not needed)
-# *.mp4
-# *.avi
-# *.mkv
-# *.mov
-
-# Audio (uncomment if not needed)
-# *.mp3
-# *.wav
-# *.flac
-
-# ============================================================================
-# Keep Important Files
-# ============================================================================
-
-# Force include important files that might be ignored by patterns above
-!README.md
-!LICENSE
-!CHANGELOG.md
-!IDROCK_DEMO_GUIDE.md
-!demo-script.py
-!docker-compose.yml
-!Dockerfile
-!requirements.txt
-!package.json
-!pyproject.toml
-!.dockerignore
-!.env.example
-!.env.template
-
-# Keep all .md files in root
-!/*.md
-
-# Keep all configuration files
-!*config*
-!*.json
-!*.yml
-!*.yaml
-!*.toml
+# Development
+.dev/
+dev/
+scratch/
+notes.txt
+TODO.md
