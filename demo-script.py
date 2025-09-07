@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-IDROCK Security System - Comprehensive Demonstration Script
+IDROCK - IP Reputation Security Tool - Comprehensive Demonstration Script
 
 This script demonstrates the complete IDROCK system workflow with:
 1. Service health verification
@@ -567,7 +567,7 @@ class IDROCKDemoRunner:
     
     def run_complete_demo(self) -> bool:
         """Run the complete demonstration"""
-        print_header("IDROCK Security System - Complete Demonstration")
+        print_header("IDROCK - IP Reputation Security Tool - Complete Demonstration")
         
         print_info(f"Demo User ID: {self.demo_user_id}")
         print_info(f"Demo Email: {self.demo_email}")

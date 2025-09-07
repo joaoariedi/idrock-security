@@ -1,4 +1,4 @@
-# IDROCK Security System - Complete Demonstration Guide
+# IDROCK - IP Reputation Security Tool - Complete Demonstration Guide
 
 This guide provides step-by-step instructions to demonstrate the complete IDROCK security system workflow, from NexShop user registration through IDROCK risk assessment and history tracking. The guide is synchronized with the automated demo script to ensure consistency between manual and automated testing.
 
