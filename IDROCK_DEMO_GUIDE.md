@@ -29,16 +29,28 @@ The workflow demonstrates:
 
 ## Prerequisites
 
-1. Start both services using Docker Compose:
+1. **Configure API Key Authentication**: Set up your environment with a secure API key:
+```bash
+# Copy the environment configuration
+cp .env.example .env
+
+# Edit .env and set your API key (required for IDROCK endpoints):
+IDROCK_API_KEY=your-secure-demo-api-key-here
+```
+
+2. Start both services using Docker Compose:
 ```bash
 docker-compose up -d
 ```
 
-2. Verify services are running:
+3. Verify services are running:
 ```bash
+# Health check (no authentication required)
 curl http://localhost:8000/api/v1/health/
 curl http://localhost:3000/health
 ```
+
+**Important**: All IDROCK Security Service endpoints (`/verify`, `/history`, `/stats`) require API key authentication. The demo script automatically handles authentication using the `IDROCK_API_KEY` environment variable.
 
 ---
 
