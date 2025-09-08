@@ -1,0 +1,230 @@
+﻿FACULDADE DE INFORMÁTICA E ADMINISTRAÇÃO PAULISTA 
+DEFESA CIBERNÉTICA
+2TDCOB
+
+
+JOÃO CARLOS ARIEDI FILHO
+RAPHAEL HIDEYUKI UEMATSU
+TIAGO ELUSARDO MARQUES
+LUCAS MAZZAFERRO DIAS
+
+
+
+
+
+
+BEDROCK - SISTEMA DE ANÁLISE DE REPUTAÇÃO DE ACESSO PARA DETERMINAÇÃO DE RISCO DE FRAUDE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+________________
+JOÃO CARLOS ARIEDI FILHO - RM558048
+RAPHAEL HIDEYUKI UEMATSU - RM557902
+TIAGO ELUSARDO MARQUES - RM557369
+LUCAS MAZZAFERRO DIAS - RM98902
+
+
+
+
+
+
+
+
+BEDROCK - SISTEMA DE ANÁLISE DE REPUTAÇÃO DE ACESSO PARA DETERMINAÇÃO DE RISCO DE FRAUDE
+
+
+Relatório de apresentação de proposta de solução de análise de reputação de acesso para determinação de risco de fraude no login de usuários da empresa NexShop.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. Objetivo
+O objetivo do projeto a coleta de informações das necessidades da empresa proponente (cliente), compreensão dos requisitos chave, pesquisa de soluções às necessidades apresentadas, elaboração de um SDK (Software Development Kit) que vise construir uma solução para detectar tentativas de fraude no momento do login, checkout ou em ações sensíveis, com o mínimo de fricção para o usuário final.
+2. Introdução
+Ao avaliar as necessidades apresentadas pela empresa, o grupo definiu que a solução que se adequa é uma biblioteca em Javascript que analisa e responde uma classificação de risco com base nas informações coletadas no frontend do cliente por meio de um módulo integrado e envia via HTTP para uma rota definida no backend, configurando então um kit de desenvolvimento de software.
+A estratégia de desenvolvimento adotada pela equipe será a implementação das verificações menos invasivas, que geram menor fricção, havendo ocorrência de alerta de segurança o sistema progride para verificações mais complexas e invasivas.
+3. Funcionalidades previstas para o mínimo produto viável
+
+
+   1. Reputação de Endereço IP[a]
+O uso de ferramentas de análise de reputação de IP é uma prática essencial tanto na segurança cibernética quanto na comunicação digital. O principal objetivo é avaliar a confiabilidade de um endereço de internet com base em seu comportamento histórico e atual.
+
+
+A ferramenta que será utilizada será o ProxyCheck.io (https://proxycheck.io).
+________________
+
+
+   2. Tipo de conexão
+Técnicas de evasão conhecidas se utilizam de conexões indiretas para mascarar acessos, para evitar essa técnica será implementada uma avaliação do tipo de conexão do usuário, analisando se há anomalia histórica que pode configurar risco de fraude, observando se o usuário está usando:
+* VPN
+* Proxy
+* TOR
+
+
+A ferramenta que será utilizada será o ProxyCheck.io (https://proxycheck.io).
+
+
+   3. Localização Geográfica[b]
+Para avaliar possíveis acessos não autorizados por um provedores de Internet diferente do habitual ou um caso de viagem impossível, uma avaliação de Autonomous System Numbers (ASNs) pode ser realizada, as coordenadas de GeoIP, assim como a identificação da distância do acesso em relação ao endereço cadastrado pelo usuário para Geo Fence. 
+
+
+A ferramenta que será utilizada será o ProxyCheck (https://proxycheck.io).
+
+
+   4. Histórico de dispositivo[c]
+Rastreio do dispositivo por fingerprint do web browser.
+
+
+A ferramenta que será utilizada será eleita desta lista:
+* FingerprintJS (https://github.com/fingerprintjs/fingerprintjs)
+* ThumbmarkJS (https://github.com/thumbmarkjs/thumbmarkjs)
+
+
+   5. Comportamento temporal
+Análise comportamental do usuário baseada no histórico de horários, dias da semana e dispositivos usados (usando histórico de dispositivo) para acessar a aplicação, visando identificar anomalias de comportamentos no uso.
+
+
+Será alimentado um histórico de acesso em banco de dados para cruzamento de informações.
+
+
+
+
+   6. Computador Real[d]
+Analisar o hardware mínimo de um computador real visando excluir ferramentas que não são um browser real em um computador real.
+
+
+Serão verificados por Javascript do web browser a quantidade de memória e de cpus para determinar se é um computador real:
+
+
+  
+
+
+
+   7. Browser Real[e]
+Avaliação passiva via HTTP User-Agent do lado do servidor para determinar se é um Bot ou ferramenta automatizada.
+
+
+Será utilizada esta lista de validação:
+https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/tree/master/_generator_lists
+
+
+Para determinação de Browser Headless, visando identificar tentativas de acesso via scripts e automações que usam uma engine de browser real mas sem interface, será utilizado está biblioteca:
+https://github.com/fingerprintjs/BotD
+________________
+
+
+   8. Captcha Invisível com Prova de Trabalho[f]
+* Resistente a replay
+* Torna a força bruta lenta e pesada
+* Fácil para humanos e difícil para bots
+
+
+A ferramenta que será utilizada será o CapJS (https://capjs.js.org)
+
+
+4. Funcionalidades em avaliação para versões futuras
+As funcionalidades descritas abaixo podem ser incorporadas conforme viabilidade e prioridade do produto.
+Biometria comportamental
+* Analisar o uso do teclado, mouse e touch screen
+* Ritmo de digitação em WPM
+* Tempo médio entre teclas
+* Uso de teclas de edição: backspace, tab, setas
+* Velocidade e aceleração de arrasto de cursor e retidão de percurso
+Formulário de autenticação Multi-Passo
+* Facilita a biometria comportamental.
+* Difícil para bots e ferramentas automatizadas.
+* Passos adaptáveis conforme o resultado de risco de cada análise.
+Autenticação passwordless
+Uso de pass keys para eliminar senhas
+Autenticação Multi-Fator Adaptativa
+* Envio de email com link de acesso
+* OTP
+* Smartphone Push
+* Token Físico
+5. Tech Stack
+   1. Linguagens
+A linguagem principal que será utilizada para instrumentar as ferramentas será o Javascript, que foi escolhida por ser a mesma utilizada no frontend e backend da empresa proponente. 
+
+
+6. Ambiente de desenvolvimento
+   1. Integrated Development Environment - IDE
+O Neovim e Visual Studio Code foram selecionadas pelo grupo para servir como ambientes de desenvolvimento de código devido às suas distintas vantagens e funcionalidades que atendem às necessidades do grupo.
+      1. NeoVim
+É uma variação do editor de texto Vim (Vi Improved) que trouxe diversos novos recursos que facilitaram o uso. Entre elas o suporte de scripts, a integração com compiladores, depuradores e sistemas de controle de versão, por meio de plugins.
+      2. Visual Studio Code
+Criado pela Microsoft, o Visual Studio Code mais conhecido como VSCode possui uma vasta gama de extensões, tornando ele uma ferramenta versátil para qualquer situação.
+
+
+
+
+
+
+7. Gestão do projeto
+O projeto será gerido através da plataforma Github, usando o módulo de projetos com um Kanban simples, os repositórios estarão diretamente vinculados ao projeto. 
+8. Entregas
+   1. Sprint 1: Slides https://bit.ly/45eSYjc, Vídeo https://youtu.be/oIakO46Z_r0
+SÃO PAULO
+2025
+[a]https://proxycheck.io/ - mostra reputação, localização, se está utilizando proxy/vpn/tor
+
+
+Lista de bad IPs 
+https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-ip-addresses.list
+[b]Histórico de endereços - Analisar mudança de BGP-ASN e cidade por GeoIP
+Geofence - Raio em KM à partir de um endereço definido pelo usuário
+Viagem Impossível - Calcular a velocidade do deslocamento do usuário considerando:
+Tempo em horas entre logins
+Distância geodésica em Km entre logins
+Velocidade do avião Concorde.
+[c]Gerador de fingerprints
+https://www.thumbmarkjs.com
+https://github.com/thumbmarkjs/thumbmarkjs
+[d]Códigos em JS
+navigator.deviceMemory;
+navigator.hardwareConcurrency;
+[e]Lista de bad user agents
+https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list
+
+
+Detector de bots a partir do fingerprint
+https://github.com/fingerprintjs/BotD
+[f]Captcha invisível
+https://capjs.js.org
+https://github.com/tiagorangel1/cap
