@@ -4,6 +4,7 @@ from typing import Optional, List
 from datetime import datetime, timedelta
 
 from app.core.database import get_db
+from app.core.auth import verify_api_key_dependency
 from app.schemas.identity import IdentityVerificationRequest, IdentityVerificationResponse
 from app.schemas.history import HistoryResponse, HistoryFilters
 from app.services.risk_engine import RiskEngine
@@ -20,10 +21,13 @@ history_service = HistoryService()
 @router.post("/verify", response_model=IdentityVerificationResponse)
 async def verify_identity(
     request: IdentityVerificationRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key_dependency)
 ):
     """
     Identity verification endpoint with IP reputation analysis
+    
+    **Authentication Required**: This endpoint requires a valid API key in the Authorization header.
     
     This is the core MVP functionality providing real-time fraud risk assessment
     based on IP reputation analysis using ProxyCheck.io integration.
@@ -72,10 +76,13 @@ async def get_assessment_history(
     page: int = Query(1, ge=1, description="Page number (starts from 1)"),
     limit: int = Query(50, ge=1, le=500, description="Number of records per page (max 500)"),
     format: str = Query("json", pattern="^(json|csv)$", description="Response format"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key_dependency)
 ):
     """
     Retrieve security assessment history with comprehensive filtering
+    
+    **Authentication Required**: This endpoint requires a valid API key in the Authorization header.
     
     This endpoint provides access to historical risk assessment data with
     advanced filtering and pagination capabilities.
@@ -143,10 +150,13 @@ async def get_assessment_history(
 async def get_assessment_stats(
     user_id: Optional[str] = Query(None, description="Get stats for specific user"),
     days: int = Query(7, ge=1, le=365, description="Number of days to analyze (max 365)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key_dependency)
 ):
     """
     Get security assessment statistics
+    
+    **Authentication Required**: This endpoint requires a valid API key in the Authorization header.
     
     Provides summary statistics for risk assessments over a specified time period.
     Useful for security dashboards and monitoring.
