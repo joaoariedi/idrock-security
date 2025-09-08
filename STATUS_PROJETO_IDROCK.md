@@ -507,7 +507,7 @@ if (shouldRetry) {
 #### **Sprint 3: Análise Comportamental**
 - Implementar análise de padrões temporais
 - Adicionar detecção de comportamento anômalo
-- Sistema de machine learning básico
+- Sistema de análise estatística básico
 - **Duração Estimada**: 3 semanas
 
 #### **Sprint 4: Anti-Bot e Captcha**
@@ -650,7 +650,7 @@ curl -X POST http://localhost:8000/api/v1/identity/verify \
 ---
 
 **RELATÓRIO PREPARADO POR:** Framework Orchestrator  
-**CONFORMIDADE:** 18-Step AI Development Framework  
+**CONFORMIDADE:** Framework de Desenvolvimento Estruturado  
 **VERSÃO:** 1.0  
 **DATA:** 08 de Setembro de 2025
 
