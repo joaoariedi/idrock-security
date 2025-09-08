@@ -10,6 +10,7 @@ services:
       - DATABASE_URL=sqlite:///./data/idrock_security.db
       - PROXYCHECK_API_KEY=${PROXYCHECK_API_KEY:-}
       - SECRET_KEY=${IDROCK_SECRET_KEY:-your-secret-key-change-in-production}
+      - IDROCK_API_KEY=${IDROCK_API_KEY:-your-idrock-api-key-change-in-production}
     volumes:
       - idrock_data:/app/data
     restart: unless-stopped
