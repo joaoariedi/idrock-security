@@ -10,12 +10,12 @@ services:
       - DATABASE_URL=sqlite:///./data/idrock_security.db
       - PROXYCHECK_API_KEY=${PROXYCHECK_API_KEY:-}
       - SECRET_KEY=${IDROCK_SECRET_KEY:-your-secret-key-change-in-production}
-      - IDROCK_API_KEY=${IDROCK_API_KEY:-your-idrock-api-key-change-in-production}
+      - IDROCK_API_KEY=${IDROCK_API_KEY:-demo-api-key-12345}
     volumes:
       - idrock_data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/api/v1/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -34,7 +34,7 @@ services:
       - DATABASE_URL=sqlite:./data/nexshop.db
       - JWT_SECRET=${JWT_SECRET:-your-jwt-secret-change-in-production}
       - IDROCK_API_URL=http://idrock-security:8000
-      - IDROCK_API_KEY=${IDROCK_API_KEY:-}
+      - IDROCK_API_KEY=${IDROCK_API_KEY:-demo-api-key-12345}
       - CORS_ORIGIN=http://localhost:3001
     volumes:
       - nexshop_data:/app/data

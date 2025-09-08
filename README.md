@@ -155,13 +155,13 @@ All IDROCK Security Service endpoints require API key authentication using Beare
 
 1. **Environment Variable**: Set `IDROCK_API_KEY` in your `.env` file:
    ```bash
-   IDROCK_API_KEY=your-secure-api-key-here
+   IDROCK_API_KEY=demo-api-key-12345
    ```
 
 2. **Docker Environment**: The API key is automatically configured in `docker-compose.yml`:
    ```yaml
    environment:
-     - IDROCK_API_KEY=${IDROCK_API_KEY:-your-idrock-api-key-change-in-production}
+     - IDROCK_API_KEY=${IDROCK_API_KEY:-demo-api-key-12345}
    ```
 
 #### Usage in HTTP Requests
@@ -169,7 +169,7 @@ All IDROCK Security Service endpoints require API key authentication using Beare
 All API requests must include the API key in the Authorization header:
 
 ```bash
-Authorization: Bearer YOUR_API_KEY
+Authorization: Bearer demo-api-key-12345
 ```
 
 #### Security Features
@@ -185,7 +185,7 @@ Authorization: Bearer YOUR_API_KEY
 ```bash
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "user123",
     "ip_address": "192.168.1.100",
@@ -296,11 +296,11 @@ async function assessRisk(userData) {
 ### Security Statistics
 ```bash
 # Get IDROCK service statistics (requires API key)
-curl -H "Authorization: Bearer YOUR_API_KEY" \
+curl -H "Authorization: Bearer demo-api-key-12345" \
      "http://localhost:8000/api/v1/identity/stats"
 
 # Get assessment history (requires API key)
-curl -H "Authorization: Bearer YOUR_API_KEY" \
+curl -H "Authorization: Bearer demo-api-key-12345" \
      "http://localhost:8000/api/v1/identity/history"
 
 # Get NexShop security integration stats

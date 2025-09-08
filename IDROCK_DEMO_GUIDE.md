@@ -35,7 +35,7 @@ The workflow demonstrates:
 cp .env.example .env
 
 # Edit .env and set your API key (required for IDROCK endpoints):
-IDROCK_API_KEY=your-secure-demo-api-key-here
+IDROCK_API_KEY=demo-api-key-12345
 ```
 
 2. Start both services using Docker Compose:
@@ -138,6 +138,7 @@ The demo script tests three specific scenarios with detailed output. Each scenar
 # This matches the demo script's Scenario A exactly
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "demo_user_manual",
     "ip_address": "192.168.1.100",
@@ -204,6 +205,7 @@ curl -X POST "http://localhost:8000/api/v1/identity/verify" \
 # This matches the demo script's Scenario B exactly - VPN IP for checkout action
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "demo_user_manual",
     "ip_address": "45.76.97.227",
@@ -277,6 +279,7 @@ curl -X POST "http://localhost:8000/api/v1/identity/verify" \
 # This matches the demo script's Scenario C exactly - Hosting IP with automation patterns
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "demo_user_manual",
     "ip_address": "185.220.100.240",
@@ -433,7 +436,8 @@ The demo script displays comprehensive security analytics including recent asses
 ```bash
 # The demo script fetches history for the specific demo user
 curl -X GET "http://localhost:8000/api/v1/identity/history?limit=5&user_id=demo_user_manual" \
-  -H "Content-Type: application/json" | jq
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
 
 # Expected Response:
 # {
@@ -478,28 +482,32 @@ curl -X GET "http://localhost:8000/api/v1/identity/history?limit=5&user_id=demo_
 
 ```bash
 curl -X GET "http://localhost:8000/api/v1/identity/history?user_id=demo_user&limit=5" \
-  -H "Content-Type: application/json" | jq
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
 ```
 
 #### Filter by Risk Level
 
 ```bash
 curl -X GET "http://localhost:8000/api/v1/identity/history?risk_level=REVIEW&limit=5" \
-  -H "Content-Type: application/json" | jq
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
 ```
 
 #### Filter by Action Type
 
 ```bash
 curl -X GET "http://localhost:8000/api/v1/identity/history?action_type=login&limit=5" \
-  -H "Content-Type: application/json" | jq
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
 ```
 
 #### Filter by Date Range
 
 ```bash
 curl -X GET "http://localhost:8000/api/v1/identity/history?start_date=2025-09-07T00:00:00Z&end_date=2025-09-07T23:59:59Z&limit=10" \
-  -H "Content-Type: application/json" | jq
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
 ```
 
 #### Get IDROCK Assessment Statistics (24 hours)
@@ -507,7 +515,8 @@ curl -X GET "http://localhost:8000/api/v1/identity/history?start_date=2025-09-07
 ```bash
 # The demo script uses 1-day statistics for current demo data
 curl -X GET "http://localhost:8000/api/v1/identity/stats?days=1" \
-  -H "Content-Type: application/json" | jq
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
 
 # Expected Response:
 # {
@@ -572,6 +581,7 @@ curl -X GET "http://localhost:3000/api/auth/stats" \
 ```bash
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "demo_user",
     "ip_address": "192.168.1.100",
@@ -602,6 +612,7 @@ curl -X POST "http://localhost:8000/api/v1/identity/verify" \
 ```bash
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "demo_user",
     "ip_address": "192.168.1.100",
