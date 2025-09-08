@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
+    # API Authentication
+    idrock_api_key: Optional[str] = None
+    
     # Rate Limiting
     rate_limit_requests: int = 100
     rate_limit_window: int = 60  # seconds

@@ -145,12 +145,47 @@ npm run dev
 - **Authentication**: http://localhost:3000/api/auth
 - **Security Integration**: http://localhost:3000/api/security
 
+## 🔐 Authentication
+
+### API Key Authentication
+
+All IDROCK Security Service endpoints require API key authentication using Bearer tokens. This ensures secure communication between client applications and the IDROCK service.
+
+#### Configuration
+
+1. **Environment Variable**: Set `IDROCK_API_KEY` in your `.env` file:
+   ```bash
+   IDROCK_API_KEY=demo-api-key-12345
+   ```
+
+2. **Docker Environment**: The API key is automatically configured in `docker-compose.yml`:
+   ```yaml
+   environment:
+     - IDROCK_API_KEY=${IDROCK_API_KEY:-demo-api-key-12345}
+   ```
+
+#### Usage in HTTP Requests
+
+All API requests must include the API key in the Authorization header:
+
+```bash
+Authorization: Bearer demo-api-key-12345
+```
+
+#### Security Features
+
+- **HTTPBearer Authentication**: FastAPI security scheme for token validation
+- **403 Forbidden Response**: Unauthorized requests are blocked with detailed error messages
+- **Automatic Token Validation**: Invalid or missing tokens are rejected
+- **SDK Integration**: NexShop SDK automatically handles authentication
+
 ## 🔧 API Usage Examples
 
 ### 1. Identity Verification (Direct IDROCK API)
 ```bash
 curl -X POST "http://localhost:8000/api/v1/identity/verify" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
   -d '{
     "user_id": "user123",
     "ip_address": "192.168.1.100",
@@ -233,7 +268,7 @@ const { IDRockNodeSDK } = require('./src/services/idrockClient');
 // Initialize SDK
 const idrockClient = new IDRockNodeSDK({
   baseUrl: 'http://localhost:8000',
-  apiKey: 'your-api-key'
+  apiKey: process.env.IDROCK_API_KEY
 });
 
 // Risk assessment
@@ -260,8 +295,13 @@ async function assessRisk(userData) {
 
 ### Security Statistics
 ```bash
-# Get IDROCK service statistics
-curl "http://localhost:8000/api/v1/identity/stats"
+# Get IDROCK service statistics (requires API key)
+curl -H "Authorization: Bearer demo-api-key-12345" \
+     "http://localhost:8000/api/v1/identity/stats"
+
+# Get assessment history (requires API key)
+curl -H "Authorization: Bearer demo-api-key-12345" \
+     "http://localhost:8000/api/v1/identity/history"
 
 # Get NexShop security integration stats
 curl "http://localhost:3000/api/security/stats"
@@ -284,14 +324,16 @@ curl "http://localhost:3000/api/security/health"
 
 ## 🔒 Security Features
 
+- **API Key Authentication** with HTTPBearer token validation
 - **IP Reputation Analysis** via ProxyCheck.io integration
 - **Device Fingerprinting** for enhanced security
 - **Risk-based Authentication** with adaptive thresholds
 - **Comprehensive Audit Logging** for compliance
 - **Graceful Fallback** when external services are unavailable
-- **JWT Authentication** with secure token management
+- **JWT Authentication** with secure token management (NexShop)
 - **Rate Limiting** and DDoS protection
 - **Input Validation** and SQL injection protection
+- **403 Forbidden Responses** for unauthorized access attempts
 
 ## 📈 Risk Assessment Details
 

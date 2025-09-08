@@ -17,6 +17,7 @@ import requests
 import json
 import time
 import sys
+import os
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional
@@ -109,6 +110,15 @@ class IDROCKDemoRunner:
         self.demo_user_id = f"demouser{uuid.uuid4().hex[:8]}"
         self.demo_email = f"demo_{uuid.uuid4().hex[:8]}@idrock.com"
         self.demo_password = "SecurePassword123"
+        
+        # Get API key from environment or use default for demo
+        self.idrock_api_key = os.getenv("IDROCK_API_KEY", "demo-api-key-12345")
+        
+        # Set default headers for IDROCK API requests
+        self.idrock_headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.idrock_api_key}"
+        }
         
     def wait_for_services(self) -> bool:
         """Wait for both services to be available"""
@@ -284,11 +294,11 @@ class IDROCKDemoRunner:
             print_info(scenario['description'])
             
             try:
-                print_info(f"Sending request to IDROCK API...")
+                print_info(f"Sending request to IDROCK API with authentication...")
                 response = self.session.post(
                     f"{IDROCK_URL}/api/v1/identity/verify",
                     json=scenario['data'],
-                    headers={"Content-Type": "application/json"}
+                    headers=self.idrock_headers
                 )
                 
                 if response.status_code == 200:
@@ -453,7 +463,8 @@ class IDROCKDemoRunner:
             # Get recent assessment history
             print_info("Fetching recent assessment history...")
             history_response = self.session.get(
-                f"{IDROCK_URL}/api/v1/identity/history?limit=5&user_id={self.demo_user_id}"
+                f"{IDROCK_URL}/api/v1/identity/history?limit=5&user_id={self.demo_user_id}",
+                headers=self.idrock_headers
             )
             
             if history_response.status_code == 200:
@@ -484,7 +495,10 @@ class IDROCKDemoRunner:
             
             # Get overall statistics
             print_info("Fetching overall security statistics...")
-            stats_response = self.session.get(f"{IDROCK_URL}/api/v1/identity/stats?days=1")
+            stats_response = self.session.get(
+                f"{IDROCK_URL}/api/v1/identity/stats?days=1",
+                headers=self.idrock_headers
+            )
             
             if stats_response.status_code == 200:
                 stats_data = stats_response.json()
@@ -572,6 +586,7 @@ class IDROCKDemoRunner:
         print_info(f"Demo User ID: {self.demo_user_id}")
         print_info(f"Demo Email: {self.demo_email}")
         print_info(f"Target Services: IDROCK ({IDROCK_URL}) + NexShop ({NEXSHOP_URL})")
+        print_info(f"IDROCK API Key: {self.idrock_api_key[:12]}... (configured from IDROCK_API_KEY env var)")
         print_info(f"Timestamp: {datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')}")
         
         # Run all demonstration steps

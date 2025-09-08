@@ -54,6 +54,12 @@ def custom_openapi():
         - **IP reputation analysis** using ProxyCheck.io integration
         - **Confidence scoring** (0-100) with adaptive risk thresholds
         - **Assessment history** with filtering and pagination
+        - **API key authentication** for secure client access
+        
+        ### Authentication:
+        - **API Key Required**: All endpoints require Bearer token authentication
+        - **Security**: Endpoints protected with HTTPBearer authentication scheme
+        - **Access Control**: Unauthorized requests return HTTP 403 responses
         
         ### Risk Levels:
         - **ALLOW (70-100)**: Low risk, automatic approval
