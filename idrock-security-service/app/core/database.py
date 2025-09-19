@@ -28,4 +28,7 @@ def get_db():
 
 def create_tables():
     """Create all tables in the database"""
+    # Import all models to ensure they're registered with Base
+    from app.models import RiskAssessment, AuditLog, Device, DeviceAccess
+
     Base.metadata.create_all(bind=engine)
