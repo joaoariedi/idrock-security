@@ -20,10 +20,13 @@ The IDROCK system consists of two integrated services:
 2. **NexShop E-commerce Service** (Node.js/Express) - Port 3000
 
 The workflow demonstrates:
-- User registration in NexShop
+- User registration in NexShop with device fingerprinting
+- Advanced security features including device trust management
+- Impossible travel detection with geodesic calculations
+- Hardware validation and browser automation detection
 - Login attempts with integrated IDROCK security protection
-- Real-time risk assessment based on IP reputation
-- Security audit trail and history tracking
+- Real-time multi-factor risk assessment
+- Comprehensive security audit trail and analytics
 
 ---
 
@@ -54,9 +57,9 @@ curl http://localhost:3000/health
 
 ---
 
-## Demo Workflow: Complete User Journey
+## Demo Workflow: Complete User Journey with Advanced Security
 
-The demo script performs these exact steps in order. For manual testing, follow each step:
+The demo script performs these exact steps in order, demonstrating all advanced security features. For manual testing, follow each step:
 
 ### Step 1: Service Health Check
 
@@ -637,6 +640,186 @@ curl -X POST "http://localhost:8000/api/v1/identity/verify" \
 
 ---
 
+## Advanced Security Features Demonstration
+
+The demo script includes comprehensive testing of advanced security features implemented in Sprint 4. These features showcase cutting-edge fraud prevention capabilities:
+
+### Step 6: Advanced Security Features
+
+#### Device Trust Management
+
+The demo script demonstrates the complete device management lifecycle:
+
+```bash
+# Register a new device with advanced fingerprinting
+curl -X POST "http://localhost:8000/api/v1/devices/register" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
+  -d '{
+    "user_id": "demo_user",
+    "device_fingerprint": "fp_demo_device_advanced",
+    "hardware_info": {
+      "cpu_cores": 8,
+      "ram_gb": 16,
+      "screen_resolution": "1920x1080",
+      "platform": "Win32",
+      "timezone": -300,
+      "language": "en-US"
+    },
+    "browser_info": {
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "canvas_fingerprint": "sha256:a1b2c3d4e5f6...",
+      "webgl_fingerprint": "sha256:f6e5d4c3b2a1...",
+      "audio_fingerprint": "sha256:1a2b3c4d5e6f..."
+    }
+  }' | jq
+
+# Expected Response:
+# {
+#   "success": true,
+#   "message": "Device registered successfully",
+#   "device": {
+#     "device_id": 42,
+#     "user_id": "demo_user",
+#     "is_trusted": false,
+#     "created_at": "2025-09-22T14:00:00Z",
+#     "hardware_validation": "VALID",
+#     "browser_validation": "LEGITIMATE"
+#   }
+# }
+```
+
+```bash
+# List user devices
+curl -X GET "http://localhost:8000/api/v1/devices/list/demo_user" \
+  -H "Authorization: Bearer demo-api-key-12345" | jq
+
+# Update device trust status
+curl -X PUT "http://localhost:8000/api/v1/devices/42/trust" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
+  -d '{"is_trusted": true}' | jq
+```
+
+#### Impossible Travel Detection
+
+The demo script demonstrates geographic analysis with real-world scenarios:
+
+```bash
+# Log access from New York
+curl -X POST "http://localhost:8000/api/v1/devices/access" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
+  -d '{
+    "device_id": 42,
+    "ip_address": "192.168.1.100",
+    "location_data": {
+      "lat": 40.7128,
+      "lng": -74.0060,
+      "country": "US",
+      "city": "New York"
+    }
+  }' | jq
+
+# Attempt access from Tokyo 2 minutes later (impossible travel)
+curl -X POST "http://localhost:8000/api/v1/devices/access" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
+  -d '{
+    "device_id": 42,
+    "ip_address": "192.168.2.100",
+    "location_data": {
+      "lat": 35.6762,
+      "lng": 139.6503,
+      "country": "JP",
+      "city": "Tokyo"
+    }
+  }' | jq
+
+# Expected Response:
+# {
+#   "success": false,
+#   "risk_level": "DENY",
+#   "message": "Impossible travel detected",
+#   "travel_analysis": {
+#     "travel_speed_kmh": 19312503.5,
+#     "distance_km": 10875.7,
+#     "time_diff_hours": 0.033,
+#     "is_feasible": false
+#   }
+# }
+```
+
+#### Hardware Validation
+
+Testing insufficient hardware detection:
+
+```bash
+# Register device with insufficient specs
+curl -X POST "http://localhost:8000/api/v1/devices/register" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
+  -d '{
+    "user_id": "demo_user",
+    "device_fingerprint": "fp_weak_device",
+    "hardware_info": {
+      "cpu_cores": 1,
+      "ram_gb": 2,
+      "screen_resolution": "800x600",
+      "platform": "Linux i686"
+    }
+  }' | jq
+
+# Expected Response shows hardware validation failure:
+# {
+#   "success": true,
+#   "device": {
+#     "hardware_validation": "SUSPICIOUS",
+#     "validation_issues": [
+#       "Insufficient CPU cores: 1 (minimum: 2)",
+#       "Insufficient RAM: 2GB (minimum: 4GB)"
+#     ]
+#   }
+# }
+```
+
+#### Browser Automation Detection
+
+Testing automation tool detection:
+
+```bash
+# Simulate Selenium automation
+curl -X POST "http://localhost:8000/api/v1/devices/register" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer demo-api-key-12345" \
+  -d '{
+    "user_id": "demo_user",
+    "device_fingerprint": "fp_automation_test",
+    "browser_info": {
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/91.0.4472.124 Safari/537.36 Selenium/3.141.59",
+      "detected_patterns": ["selenium", "automated", "headless"]
+    }
+  }' | jq
+
+# Expected Response shows automation detection:
+# {
+#   "success": true,
+#   "device": {
+#     "browser_validation": "AUTOMATION DETECTED",
+#     "detected_patterns": ["selenium", "automated", "headless"],
+#     "risk_factors": {
+#       "automation_tool": {
+#         "detected": true,
+#         "severity": "high",
+#         "description": "Selenium automation detected"
+#       }
+#     }
+#   }
+# }
+```
+
+---
+
 ## API Documentation Access
 
 ### Interactive API Documentation (Swagger UI)
@@ -682,7 +865,7 @@ For testing purposes, use these IP ranges:
 - **Medium Risk (REVIEW)**: Known VPN providers (check ProxyCheck.io)
 - **High Risk (DENY)**: Known hosting/datacenter IPs
 
-### Step 6: API Documentation Access
+### Step 7: API Documentation Access
 
 The demo script verifies that both Swagger UI and OpenAPI specifications are available:
 

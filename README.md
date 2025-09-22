@@ -38,30 +38,44 @@ IDROCK is a comprehensive IP reputation security tool designed to provide real-t
 
 ## ✨ Features
 
-### MVP Scope (Current Implementation)
+### Advanced Security Implementation (Complete)
 - **Real-time IP reputation analysis** using ProxyCheck.io
-- **Risk scoring** (0-100) with adaptive thresholds
+- **Device Trust Management System** with unique constraints to prevent cloning
+- **Impossible Travel Detection** with geodesic calculations and speed thresholds
+- **Hardware Validation System** detecting real computers vs automation tools
+- **Browser Automation Detection** with comprehensive pattern matching
+- **Risk scoring** (0-100) with adaptive thresholds and weighted factors
 - **Risk levels**: ALLOW (70-100), REVIEW (30-69), DENY (0-29)
 - **Dual SDK integration** for seamless service communication
-- **Comprehensive logging** and audit trails
+- **Comprehensive logging** and audit trails with device access history
 - **Docker containerization** for easy deployment
 - **Interactive API documentation** (Swagger/OpenAPI)
 
-### Risk Assessment Process
-1. Frontend JavaScript SDK collects device fingerprinting data
-2. Data flows to NexShop backend via secure endpoints
-3. NexShop Node.js SDK communicates with IDROCK API
-4. IDROCK analyzes IP reputation via ProxyCheck.io
-5. Risk score calculated and recommendations generated
-6. Response flows back through the SDK chain
+### Advanced Risk Assessment Process
+1. Frontend JavaScript SDK collects comprehensive device fingerprinting data (Canvas, WebGL, Audio)
+2. Device registration and trust management with unique constraint validation
+3. Hardware validation (CPU cores, RAM) and browser automation detection
+4. Data flows to NexShop backend via secure endpoints
+5. NexShop Node.js SDK communicates with IDROCK API
+6. IDROCK analyzes multiple risk factors:
+   - IP reputation via ProxyCheck.io
+   - Impossible travel detection using geodesic calculations
+   - Device trust status and access history
+   - Hardware authenticity validation
+   - Browser automation pattern matching
+7. Weighted risk score calculated with multi-factor analysis
+8. Recommendations generated with detailed risk breakdown
+9. Response flows back through the SDK chain with comprehensive analysis
 
 ## 🛠️ Technology Stack
 
 ### IDROCK Security Service
 - **FastAPI** (Python 3.9+) - Main API framework
-- **SQLAlchemy** + **SQLite** - Database and ORM
+- **SQLAlchemy** + **SQLite** - Database and ORM with advanced device models
+- **Alembic** - Database migrations and schema management
 - **Pydantic** - Data validation and API schemas
 - **httpx** - Async HTTP client for external APIs
+- **geopy** - Geodesic distance calculations for travel detection
 - **ProxyCheck.io** - IP reputation analysis
 
 ### NexShop E-commerce Service  
@@ -72,8 +86,8 @@ IDROCK is a comprehensive IP reputation security tool designed to provide real-t
 - **axios** - HTTP client for IDROCK API
 
 ### SDKs
-- **JavaScript SDK** - Frontend data collection and fingerprinting
-- **Node.js SDK** - Backend API communication with retry logic
+- **JavaScript SDK** - Advanced frontend data collection with Canvas, WebGL, Audio fingerprinting
+- **Node.js SDK** - Backend API communication with retry logic and device management
 
 ## 🚦 Quick Start
 
@@ -144,6 +158,12 @@ npm run dev
 - **Health Check**: http://localhost:3000/health
 - **Authentication**: http://localhost:3000/api/auth
 - **Security Integration**: http://localhost:3000/api/security
+
+### Advanced Security Endpoints
+- **Device Management**: http://localhost:8000/api/v1/devices
+- **Travel Detection**: Advanced impossible travel analysis
+- **Hardware Validation**: Real device vs automation tool detection
+- **Browser Validation**: Comprehensive automation pattern detection
 
 ## 🔐 Authentication
 
@@ -322,18 +342,28 @@ curl "http://localhost:3000/health"
 curl "http://localhost:3000/api/security/health"
 ```
 
-## 🔒 Security Features
+## 🔒 Advanced Security Features
 
+### Core Security Capabilities
 - **API Key Authentication** with HTTPBearer token validation
+- **Device Trust Management** with unique constraint prevention of cloning attacks
+- **Impossible Travel Detection** using geodesic calculations (>1000 km/h = REVIEW, >2000 km/h = DENY)
+- **Hardware Validation System** with minimum CPU/RAM requirements for real devices
+- **Browser Automation Detection** with comprehensive pattern matching (Selenium, headless browsers)
+- **Advanced Device Fingerprinting** with Canvas, WebGL, Audio signatures
+- **Multi-Factor Risk Assessment** with weighted scoring algorithms
+
+### Security Infrastructure
 - **IP Reputation Analysis** via ProxyCheck.io integration
-- **Device Fingerprinting** for enhanced security
 - **Risk-based Authentication** with adaptive thresholds
-- **Comprehensive Audit Logging** for compliance
+- **Device Access History** tracking for behavioral analysis
+- **Comprehensive Audit Logging** for compliance with device events
 - **Graceful Fallback** when external services are unavailable
 - **JWT Authentication** with secure token management (NexShop)
 - **Rate Limiting** and DDoS protection
 - **Input Validation** and SQL injection protection
 - **403 Forbidden Responses** for unauthorized access attempts
+- **Database Constraints** preventing security bypass attempts
 
 ## 📈 Risk Assessment Details
 
@@ -342,17 +372,21 @@ curl "http://localhost:3000/api/security/health"
 - **REVIEW (30-69)**: Medium risk, additional verification required
 - **DENY (0-29)**: High risk, block action
 
-### Risk Factors (MVP)
-- **IP Reputation**: ProxyCheck.io analysis
-- **Connection Type**: Residential, Mobile, Hosting, Datacenter
+### Advanced Risk Factors (Implemented)
+- **IP Reputation**: ProxyCheck.io analysis with connection type detection
+- **Travel Analysis**: Impossible travel detection using geodesic distance calculations
+- **Device Trust**: Unique device fingerprint validation and trust status
+- **Hardware Authenticity**: CPU/RAM validation for real computer detection
+- **Browser Validation**: Automation tool and headless browser detection
 - **Geographic Location**: Country-based risk assessment
 - **Proxy/VPN Detection**: Identification of anonymizing services
+- **Access Patterns**: Device usage history and behavioral analysis
 
 ### Future Enhancements
-- Behavioral analysis patterns
-- Advanced device fingerprinting
-- Machine learning risk models
-- Real-time threat intelligence feeds
+- CAPTCHA integration (CapJS) for additional verification
+- Machine learning risk models with pattern recognition
+- Real-time threat intelligence feeds integration
+- Advanced behavioral analysis with session tracking
 
 ## 🐛 Troubleshooting
 
@@ -444,5 +478,5 @@ For technical support and questions:
 
 ---
 
-**IDROCK Security Tool v1.0.0-MVP**  
-*IP Reputation Security Tool for E-commerce Fraud Prevention*
+**IDROCK Security Tool v1.0.0-Advanced**
+*Comprehensive Security Platform with Advanced Threat Detection*
