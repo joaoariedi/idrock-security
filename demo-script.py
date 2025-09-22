@@ -309,8 +309,8 @@ class IDROCKDemoRunner:
         
         scenarios = [
             {
-                "name": "Scenario A: Residential IP from US (DENY due to new device)",
-                "description": "Clean residential IP from US ISP but new device triggers DENY",
+                "name": "Scenario A: Residential IP from US (REVIEW due to new device)",
+                "description": "Clean residential IP from US ISP with new device triggers REVIEW for verification",
                 "data": {
                     "user_id": self.demo_user_id,
                     "ip_address": "73.162.241.5",
@@ -349,7 +349,7 @@ class IDROCKDemoRunner:
                         }
                     }
                 },
-                "expected_risk": "DENY"  # Private IPs get clean reputation but new device triggers DENY
+                "expected_risk": "REVIEW"  # Clean IP with new device should trigger REVIEW for verification
             },
             {
                 "name": "Scenario B: Medium-High Risk (VPN/Proxy)",
@@ -575,7 +575,7 @@ class IDROCKDemoRunner:
         
         login_scenarios = [
             {
-                "name": "Residential IP Login with New Device (Expected Block)",
+                "name": "Residential IP Login with New Device (Expected Review)",
                 "headers": {"X-Forwarded-For": "73.162.241.5"},
                 "data": {
                     "username": self.demo_user_id,
@@ -591,7 +591,7 @@ class IDROCKDemoRunner:
                         "login_source": "web_app"
                     }
                 },
-                "expected_outcome": "blocked_or_additional_verification"  # Changed: new devices are now blocked
+                "expected_outcome": "additional_verification"  # New devices trigger review for additional verification
             },
             {
                 "name": "High Risk Login (VPN) - Expected Block",
@@ -644,16 +644,23 @@ class IDROCKDemoRunner:
                 elif response.status_code == 202:
                     login_result = response.json()
                     risk_info = login_result.get('risk_assessment', {})
-                    
-                    print_warning(
-                        "Login requires additional verification",
-                        f"Risk Level: {risk_info.get('risk_level', 'N/A')}, "
-                        f"Confidence: {risk_info.get('confidence_score', 'N/A')}/100"
-                    )
-                    
+
+                    if scenario['expected_outcome'] == 'additional_verification':
+                        print_success(
+                            "Login correctly requires additional verification",
+                            f"Risk Level: {risk_info.get('risk_level', 'N/A')}, "
+                            f"Confidence: {risk_info.get('confidence_score', 'N/A')}/100"
+                        )
+                    else:
+                        print_warning(
+                            "Login requires additional verification",
+                            f"Risk Level: {risk_info.get('risk_level', 'N/A')}, "
+                            f"Confidence: {risk_info.get('confidence_score', 'N/A')}/100"
+                        )
+
                     verification_methods = login_result.get('verification_methods', [])
                     print_info(f"Available verification methods: {', '.join(verification_methods)}")
-                    
+
                     security_reasons = login_result.get('security_reasons', [])
                     if security_reasons:
                         print_info(f"Security concerns: {', '.join(security_reasons)}")

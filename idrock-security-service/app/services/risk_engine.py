@@ -189,7 +189,7 @@ class RiskEngine:
                     "severity": "medium",
                     "description": "Unknown device accessing user account"
                 }
-                analysis["scores"]["new_device_penalty"] = -20
+                analysis["scores"]["new_device_penalty"] = -15  # Reduced penalty to favor REVIEW over DENY
 
             # Travel detection (if location data available in additional_data)
             location_data = self._extract_location_data(request)
@@ -242,8 +242,8 @@ class RiskEngine:
 
             if not browser_validation["is_legitimate"]:
                 analysis["scores"]["browser_penalty"] = -30
-                if "automation_detected" in browser_validation["risk_factors"]:
-                    analysis["override_risk"] = "DENY"
+                # Don't immediately deny for automation, let scoring determine risk
+                # This allows legitimate users with new devices to go through REVIEW
 
             # Browser environment validation (if available)
             browser_env_info = self._extract_browser_environment(request)
