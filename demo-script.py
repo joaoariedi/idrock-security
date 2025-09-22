@@ -309,11 +309,11 @@ class IDROCKDemoRunner:
         
         scenarios = [
             {
-                "name": "Scenario A: Private IP with Mock Data (DENY)",
-                "description": "Private IP (192.168.x.x) uses mock data (100/100) but new device triggers DENY",
+                "name": "Scenario A: Residential IP from US (DENY due to new device)",
+                "description": "Clean residential IP from US ISP but new device triggers DENY",
                 "data": {
                     "user_id": self.demo_user_id,
-                    "ip_address": "192.168.1.100",
+                    "ip_address": "73.162.241.5",
                     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
                     "session_data": {
                         "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
@@ -575,8 +575,8 @@ class IDROCKDemoRunner:
         
         login_scenarios = [
             {
-                "name": "Private IP Login with New Device (Expected Block)",
-                "headers": {"X-Forwarded-For": "192.168.1.100"},
+                "name": "Residential IP Login with New Device (Expected Block)",
+                "headers": {"X-Forwarded-For": "73.162.241.5"},
                 "data": {
                     "username": self.demo_user_id,
                     "password": self.demo_password,
