@@ -1,14 +1,30 @@
 #!/usr/bin/env python3
 """
-IDROCK - IP Reputation Security Tool - Comprehensive Demonstration Script
+IDROCK - IP Reputation Security Tool - Comprehensive Demonstration Script with Advanced Security Features
 
 This script demonstrates the complete IDROCK system workflow with:
 1. Service health verification
 2. User registration in NexShop
-3. Three risk assessment scenarios (ALLOW, REVIEW, DENY)
-4. Integrated login testing
+3. Enhanced risk assessment scenarios with advanced security features
+4. Integrated login testing with device tracking
 5. Security history and statistics
-6. Colorful logging for clear demonstration
+6. Advanced Security Features:
+   - Device Trust Management and unique constraint validation
+   - Impossible Travel Detection with geodesic calculations
+   - Hardware Validation (CPU cores, RAM, screen resolution)
+   - Browser Automation Detection (User-Agent patterns, headless detection)
+   - Advanced device fingerprinting with Canvas/WebGL support
+7. API documentation access
+8. Colorful logging with enhanced security factor analysis
+
+New Advanced Features Demonstrated:
+- Device registration and trust status management
+- Geolocation-based impossible travel detection
+- Hardware specification validation for real computer detection
+- Browser automation and headless browser detection
+- Behavioral pattern analysis and temporal anomaly detection
+- ASN-based network provider validation
+- Enhanced risk factor weighting and scoring
 
 Run with: poetry run python demo-script.py
 """
@@ -69,10 +85,10 @@ def print_info(message: str):
     print(f"{Colors.OKCYAN}ℹ️  INFO: {message}{Colors.ENDC}")
 
 def print_risk_assessment(assessment: Dict[str, Any]):
-    """Print formatted risk assessment"""
+    """Print formatted risk assessment with advanced security features"""
     risk_level = assessment.get('risk_level', 'UNKNOWN')
     confidence_score = assessment.get('confidence_score', 0)
-    
+
     # Color based on risk level
     if risk_level == 'ALLOW':
         color = Colors.OKGREEN
@@ -83,12 +99,12 @@ def print_risk_assessment(assessment: Dict[str, Any]):
     else:  # DENY
         color = Colors.FAIL
         icon = '🚫'
-    
+
     print(f"{color}{icon} Risk Assessment Result:{Colors.ENDC}")
     print(f"{color}   Risk Level: {risk_level}{Colors.ENDC}")
     print(f"{color}   Confidence Score: {confidence_score}/100{Colors.ENDC}")
     print(f"{color}   Request ID: {assessment.get('request_id', 'N/A')}{Colors.ENDC}")
-    
+
     # Show recommendations
     recommendations = assessment.get('recommendations', [])
     if recommendations:
@@ -96,6 +112,98 @@ def print_risk_assessment(assessment: Dict[str, Any]):
         for rec in recommendations:
             priority_icon = '🔴' if rec.get('priority') == 'high' else '🟡' if rec.get('priority') == 'medium' else '🟢'
             print(f"{color}     {priority_icon} {rec.get('message', '')}{Colors.ENDC}")
+
+def print_advanced_risk_factors(assessment: Dict[str, Any]):
+    """Print detailed advanced security risk factors"""
+    risk_factors = assessment.get('risk_factors', [])
+    if not risk_factors:
+        return
+
+    print(f"\n{Colors.OKCYAN}🔍 Advanced Security Analysis:{Colors.ENDC}")
+
+    for factor in risk_factors:
+        factor_name = factor.get('factor', 'unknown')
+        score = factor.get('score', 0)
+        weight = factor.get('weight', 0)
+        details = factor.get('details', 'No details available')
+        proxycheck_data = factor.get('proxycheck_data', {})
+
+        # Format factor display based on type
+        if factor_name == 'device_trust':
+            device_info = proxycheck_data
+            trust_status = '🛡️ TRUSTED' if device_info.get('is_trusted') else '❓ NEW/UNTRUSTED'
+            device_age = device_info.get('device_age_days', 0)
+            print(f"   📱 Device Trust: {trust_status} (Age: {device_age} days, Score: {score}/100)")
+
+        elif factor_name == 'travel_feasibility':
+            travel_info = proxycheck_data
+            speed = travel_info.get('travel_speed_kmh', 0)
+            distance = travel_info.get('distance_km', 0)
+            feasible_icon = '✈️' if travel_info.get('is_feasible') else '🚨'
+            print(f"   {feasible_icon} Travel Analysis: {speed:.1f} km/h over {distance:.1f} km (Score: {score}/100)")
+            if travel_info.get('previous_location'):
+                prev_loc = travel_info['previous_location']
+                print(f"      Previous: {prev_loc.get('country', 'Unknown')} at {prev_loc.get('timestamp', 'N/A')[:19]}")
+
+        elif factor_name.endswith('_detected'):
+            severity = proxycheck_data.get('severity', 'medium')
+            severity_icon = '🔴' if severity == 'high' else '🟡' if severity == 'medium' else '🟢'
+            factor_display = factor_name.replace('_detected', '').replace('_', ' ').title()
+            print(f"   {severity_icon} {factor_display}: {details} (Score: {score}/100)")
+
+        else:
+            print(f"   🔍 {factor_name.replace('_', ' ').title()}: {details} (Score: {score}/100)")
+
+def print_device_info(device_data: Dict[str, Any]):
+    """Print device registration and trust information"""
+    if not device_data:
+        return
+
+    print(f"\n{Colors.OKCYAN}📱 Device Information:{Colors.ENDC}")
+
+    device = device_data.get('device', {})
+    is_new = device_data.get('is_new_device', False)
+    risk_assessment = device_data.get('risk_assessment', {})
+
+    device_id = device.get('device_id', 'N/A')
+    fingerprint_raw = device.get('device_fingerprint', 'N/A')
+    fingerprint = (fingerprint_raw[:20] + '...') if fingerprint_raw and len(str(fingerprint_raw or '')) > 20 else str(fingerprint_raw or 'N/A')
+    is_trusted = device.get('is_trusted', False)
+    access_count = device.get('access_count', 0)
+
+    status_icon = '🆕' if is_new else '🔄'
+    trust_icon = '🛡️' if is_trusted else '❓'
+
+    print(f"   {status_icon} Device ID: {device_id} ({'NEW' if is_new else 'KNOWN'})")
+    print(f"   {trust_icon} Trust Status: {'TRUSTED' if is_trusted else 'UNTRUSTED'} ({access_count} accesses)")
+    print(f"   🔑 Fingerprint: {fingerprint}")
+
+    # Hardware validation
+    hw_validation = risk_assessment.get('hardware_validation', {})
+    if hw_validation:
+        hw_valid = hw_validation.get('is_valid', False)
+        hw_icon = '💻' if hw_valid else '⚠️'
+        hw_issues = hw_validation.get('issues', [])
+        print(f"   {hw_icon} Hardware: {'VALID' if hw_valid else 'SUSPICIOUS'} {f'({len(hw_issues)} issues)' if hw_issues else ''}")
+
+    # Browser validation
+    browser_validation = risk_assessment.get('browser_validation', {})
+    if browser_validation:
+        browser_valid = browser_validation.get('user_agent_legitimate', True)
+        automation_detected = browser_validation.get('detected_automation', [])
+        # Also check detected_patterns for backward compatibility
+        if not automation_detected:
+            automation_detected = browser_validation.get('detected_patterns', [])
+        # Ensure automation_detected is a list
+        if automation_detected is None:
+            automation_detected = []
+        browser_icon = '🌐' if browser_valid else '🤖'
+        print(f"   {browser_icon} Browser: {'LEGITIMATE' if browser_valid else 'AUTOMATION DETECTED'}")
+        if automation_detected and len(automation_detected) > 0:
+            # Safely join the patterns list
+            patterns_str = ', '.join(str(pattern) for pattern in automation_detected[:3] if pattern)
+            if patterns_str:
+                print(f"      Detected patterns: {patterns_str}")
 
 # Service URLs
 IDROCK_URL = "http://localhost:8000"
@@ -110,6 +218,7 @@ class IDROCKDemoRunner:
         self.demo_user_id = f"demouser{uuid.uuid4().hex[:8]}"
         self.demo_email = f"demo_{uuid.uuid4().hex[:8]}@idrock.com"
         self.demo_password = "SecurePassword123"
+        self.demo_device_id = None  # Will be set during device registration
         
         # Get API key from environment or use default for demo
         self.idrock_api_key = os.getenv("IDROCK_API_KEY", "demo-api-key-12345")
@@ -213,7 +322,23 @@ class IDROCKDemoRunner:
                             "browser": "Chrome",
                             "screen_resolution": "1920x1080",
                             "timezone": "UTC-5",
-                            "platform": "Windows"
+                            "platform": "Windows",
+                            "latitude": 40.7128,
+                            "longitude": -74.0060,
+                            "hardware_info": {
+                                "cpu_cores": 8,
+                                "ram_gb": 16.0,
+                                "screen_resolution": "1920x1080",
+                                "platform": "Win32"
+                            },
+                            "browser_environment": {
+                                "has_plugins": True,
+                                "plugin_count": 5,
+                                "has_webgl": True,
+                                "has_canvas": True,
+                                "screen_depth": 24,
+                                "languages": ["en-US", "en"]
+                            }
                         }
                     },
                     "context": {
@@ -241,7 +366,23 @@ class IDROCKDemoRunner:
                             "screen_resolution": "1366x768",
                             "timezone": "UTC+1",
                             "platform": "Linux",
-                            "vpn_detected": True
+                            "vpn_detected": True,
+                            "latitude": 52.5200,
+                            "longitude": 13.4050,
+                            "hardware_info": {
+                                "cpu_cores": 4,
+                                "ram_gb": 8.0,
+                                "screen_resolution": "1366x768",
+                                "platform": "Linux x86_64"
+                            },
+                            "browser_environment": {
+                                "has_plugins": True,
+                                "plugin_count": 3,
+                                "has_webgl": True,
+                                "has_canvas": True,
+                                "screen_depth": 24,
+                                "languages": ["de-DE", "en"]
+                            }
                         }
                     },
                     "context": {
@@ -271,7 +412,23 @@ class IDROCKDemoRunner:
                             "browser": "Unknown",
                             "automation_detected": True,
                             "screen_resolution": "unknown",
-                            "suspicious_patterns": ["rapid_requests", "bot_like_behavior"]
+                            "suspicious_patterns": ["rapid_requests", "bot_like_behavior"],
+                            "latitude": 37.7749,
+                            "longitude": -122.4194,
+                            "hardware_info": {
+                                "cpu_cores": 1,
+                                "ram_gb": 2.0,
+                                "screen_resolution": "1024x768",
+                                "platform": "Unknown"
+                            },
+                            "browser_environment": {
+                                "has_plugins": False,
+                                "plugin_count": 0,
+                                "has_webgl": False,
+                                "has_canvas": False,
+                                "screen_depth": 16,
+                                "languages": []
+                            }
                         }
                     },
                     "context": {
@@ -284,6 +441,61 @@ class IDROCKDemoRunner:
                     }
                 },
                 "expected_risk": "DENY"
+            },
+            {
+                "name": "Scenario D: Advanced Device Fingerprinting",
+                "description": "Comprehensive device fingerprinting with Canvas/WebGL/Audio features",
+                "data": {
+                    "user_id": self.demo_user_id,
+                    "ip_address": "203.0.113.100",
+                    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "session_data": {
+                        "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+                        "device_fingerprint": f"fp_advanced_fingerprint_{uuid.uuid4().hex[:8]}",
+                        "additional_data": {
+                            "browser": "Chrome",
+                            "screen_resolution": "2560x1600",
+                            "timezone": "UTC-8",
+                            "platform": "MacIntel",
+                            "latitude": 37.7749,
+                            "longitude": -122.4194,
+                            "hardware_info": {
+                                "cpu_cores": 8,
+                                "ram_gb": 32.0,
+                                "screen_resolution": "2560x1600",
+                                "platform": "MacIntel",
+                                "timezone": "-480",
+                                "language": "en-US"
+                            },
+                            "browser_environment": {
+                                "has_plugins": True,
+                                "plugin_count": 7,
+                                "has_webgl": True,
+                                "has_canvas": True,
+                                "screen_depth": 30,
+                                "languages": ["en-US", "en", "es"],
+                                "navigator_properties": {
+                                    "webdriver": False,
+                                    "hardwareConcurrency": 8,
+                                    "deviceMemory": 8,
+                                    "maxTouchPoints": 0
+                                },
+                                "canvas_fingerprint": "sha256:a1b2c3d4e5f6...",
+                                "webgl_fingerprint": "sha256:f6e5d4c3b2a1...",
+                                "audio_fingerprint": "sha256:1a2b3c4d5e6f..."
+                            }
+                        }
+                    },
+                    "context": {
+                        "action_type": "login",
+                        "additional_context": {
+                            "login_method": "password",
+                            "device_remembered": False,
+                            "2fa_enabled": True
+                        }
+                    }
+                },
+                "expected_risk": "ALLOW"
             }
         ]
         
@@ -292,7 +504,20 @@ class IDROCKDemoRunner:
         for i, scenario in enumerate(scenarios, 1):
             print(f"\n{Colors.BOLD}{Colors.UNDERLINE}{scenario['name']}{Colors.ENDC}")
             print_info(scenario['description'])
-            
+
+            # Add special handling for advanced fingerprinting scenario
+            if "fingerprinting" in scenario['name'].lower():
+                print_info("This scenario demonstrates advanced device fingerprinting capabilities:")
+                browser_env = scenario['data']['session_data']['additional_data'].get('browser_environment', {})
+                if browser_env.get('canvas_fingerprint'):
+                    print(f"   🎨 Canvas Fingerprint: {browser_env['canvas_fingerprint'][:20]}...")
+                if browser_env.get('webgl_fingerprint'):
+                    print(f"   🎮 WebGL Fingerprint: {browser_env['webgl_fingerprint'][:20]}...")
+                if browser_env.get('audio_fingerprint'):
+                    print(f"   🔊 Audio Fingerprint: {browser_env['audio_fingerprint'][:20]}...")
+                print(f"   🧠 Hardware Concurrency: {browser_env.get('navigator_properties', {}).get('hardwareConcurrency', 'N/A')} cores")
+                print(f"   💾 Device Memory: {browser_env.get('navigator_properties', {}).get('deviceMemory', 'N/A')} GB")
+
             try:
                 print_info(f"Sending request to IDROCK API with authentication...")
                 response = self.session.post(
@@ -305,24 +530,30 @@ class IDROCKDemoRunner:
                     assessment = response.json()
                     print_success(f"Risk assessment completed in {assessment.get('metadata', {}).get('processing_time_ms', 'N/A')}ms")
                     print_risk_assessment(assessment)
-                    
+
+                    # Show advanced security analysis
+                    print_advanced_risk_factors(assessment)
+
                     # Verify expected vs actual risk level
                     actual_risk = assessment.get('risk_level')
                     expected_risk = scenario['expected_risk']
-                    
+
                     if actual_risk == expected_risk:
                         print_success(f"Risk level matches expectation: {actual_risk}")
                     else:
                         print_warning(f"Risk level mismatch - Expected: {expected_risk}, Actual: {actual_risk}")
-                    
-                    # Show detailed factors
+
+                    # Show detailed factors with enhanced formatting
                     risk_factors = assessment.get('risk_factors', [])
                     if risk_factors:
-                        print_info("Risk Factors Analysis:")
+                        print_info("Detailed Risk Factors Analysis:")
                         for factor in risk_factors:
+                            factor_name = factor.get('factor', 'unknown')
                             details = factor.get('details', 'No details available')
                             score = factor.get('score', 0)
-                            print(f"   🔍 {factor.get('factor', 'unknown')}: {score}/100 - {details}")
+                            weight = factor.get('weight', 0)
+                            print(f"   🔍 {factor_name.replace('_', ' ').title()}: {score}/100 (weight: {weight:.1f})")
+                            print(f"      {details}")
                     
                 else:
                     print_error(f"API request failed with status {response.status_code}", response.text[:200])
@@ -545,25 +776,277 @@ class IDROCKDemoRunner:
             print_error("Failed to retrieve security statistics", str(e))
             return False
     
+    def test_advanced_security_features(self) -> bool:
+        """Test advanced security features including device management and behavioral analysis"""
+        print_step(6, "Testing Advanced Security Features")
+
+        all_passed = True
+
+        # Test device registration and management
+        device_test_passed = self.test_device_management()
+        all_passed = all_passed and device_test_passed
+
+        # Test impossible travel detection
+        travel_test_passed = self.test_impossible_travel_detection()
+        all_passed = all_passed and travel_test_passed
+
+        # Test hardware and browser validation
+        validation_test_passed = self.test_hardware_browser_validation()
+        all_passed = all_passed and validation_test_passed
+
+        return all_passed
+
+    def test_device_management(self) -> bool:
+        """Test device registration, tracking, and trust management"""
+        print(f"\n{Colors.BOLD}{Colors.UNDERLINE}Device Trust Management Demonstration{Colors.ENDC}")
+
+        try:
+            # Scenario D: New Device Registration
+            print_info("Registering a new device for the demo user...")
+
+            device_data = {
+                "user_id": self.demo_user_id,
+                "device_fingerprint": f"fp_demo_device_{uuid.uuid4().hex[:12]}",
+                "hardware_info": {
+                    "cpu_cores": 8,
+                    "ram_gb": 16.0,
+                    "screen_resolution": "2560x1440",
+                    "platform": "Win32",
+                    "timezone": "-300",
+                    "language": "en-US"
+                },
+                "browser_info": {
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "has_plugins": True,
+                    "plugin_count": 5,
+                    "has_webgl": True,
+                    "has_canvas": True,
+                    "screen_depth": 24,
+                    "languages": ["en-US", "en"]
+                }
+            }
+
+            response = self.session.post(
+                f"{IDROCK_URL}/api/v1/devices/register",
+                json=device_data,
+                headers={"Content-Type": "application/json"}
+            )
+
+            if response.status_code == 200:
+                device_result = response.json()
+                print_success("Device registered successfully")
+                print_device_info(device_result)
+
+                # Store device ID for later tests
+                self.demo_device_id = device_result.get('device', {}).get('device_id')
+
+                # Test device listing
+                print_info("\nListing user devices...")
+                list_response = self.session.get(f"{IDROCK_URL}/api/v1/devices/list/{self.demo_user_id}")
+
+                if list_response.status_code == 200:
+                    device_list = list_response.json()
+                    devices = device_list.get('devices', [])
+                    trusted_count = device_list.get('trusted_devices', 0)
+
+                    print_success(f"Retrieved {len(devices)} devices ({trusted_count} trusted)")
+                    for device in devices[:3]:  # Show first 3 devices
+                        device_fp = device.get('device_fingerprint', 'N/A')[:20] + '...'
+                        trust_status = 'TRUSTED' if device.get('is_trusted') else 'UNTRUSTED'
+                        access_count = device.get('access_count', 0)
+                        print(f"   📱 Device {device.get('device_id')}: {trust_status} ({access_count} accesses)")
+                        print(f"      Fingerprint: {device_fp}")
+
+                return True
+            else:
+                print_error(f"Device registration failed with status {response.status_code}", response.text[:200])
+                return False
+
+        except Exception as e:
+            print_error("Device management test failed", str(e))
+            return False
+
+    def test_impossible_travel_detection(self) -> bool:
+        """Test impossible travel detection with geographic analysis"""
+        print(f"\n{Colors.BOLD}{Colors.UNDERLINE}Impossible Travel Detection Demonstration{Colors.ENDC}")
+
+        if not hasattr(self, 'demo_device_id') or not self.demo_device_id:
+            print_warning("Skipping travel detection test - no device registered")
+            return True
+
+        try:
+            # First access from New York
+            print_info("Logging device access from New York...")
+
+            ny_access = {
+                "device_id": self.demo_device_id,
+                "ip_address": "192.168.1.100",
+                "location_data": {
+                    "lat": 40.7128,
+                    "lng": -74.0060,
+                    "country": "US",
+                    "city": "New York"
+                },
+                "asn": "AS7922",
+                "hardware_info": {
+                    "cpu_cores": 8,
+                    "ram_gb": 16.0
+                }
+            }
+
+            response = self.session.post(
+                f"{IDROCK_URL}/api/v1/devices/access",
+                json=ny_access,
+                headers={"Content-Type": "application/json"}
+            )
+
+            if response.status_code == 200:
+                access_result = response.json()
+                print_success("New York access logged successfully")
+
+                # Brief pause to simulate time passage
+                time.sleep(2)
+
+                # Second access from Tokyo (impossible travel)
+                print_info("\nAttempting access from Tokyo 2 minutes later (impossible travel)...")
+
+                tokyo_access = {
+                    "device_id": self.demo_device_id,
+                    "ip_address": "203.0.113.50",
+                    "location_data": {
+                        "lat": 35.6762,
+                        "lng": 139.6503,
+                        "country": "JP",
+                        "city": "Tokyo"
+                    },
+                    "asn": "AS2516",
+                    "hardware_info": {
+                        "cpu_cores": 8,
+                        "ram_gb": 16.0
+                    }
+                }
+
+                tokyo_response = self.session.post(
+                    f"{IDROCK_URL}/api/v1/devices/access",
+                    json=tokyo_access,
+                    headers={"Content-Type": "application/json"}
+                )
+
+                if tokyo_response.status_code == 200:
+                    tokyo_result = tokyo_response.json()
+                    travel_analysis = tokyo_result.get('travel_analysis', {})
+
+                    if travel_analysis:
+                        speed = travel_analysis.get('travel_speed_kmh', 0)
+                        distance = travel_analysis.get('distance_km', 0)
+                        feasible = travel_analysis.get('is_feasible', True)
+
+                        if not feasible:
+                            print_success(f"Impossible travel detected! Speed: {speed:.1f} km/h over {distance:.1f} km")
+                            print_info(f"Risk level: {travel_analysis.get('risk_level', 'UNKNOWN')}")
+                        else:
+                            print_warning("Travel analysis did not detect impossible travel (unexpected)")
+                    else:
+                        print_warning("No travel analysis data returned")
+
+                return True
+            else:
+                print_error(f"Access logging failed with status {response.status_code}", response.text[:200])
+                return False
+
+        except Exception as e:
+            print_error("Travel detection test failed", str(e))
+            return False
+
+    def test_hardware_browser_validation(self) -> bool:
+        """Test hardware and browser validation features"""
+        print(f"\n{Colors.BOLD}{Colors.UNDERLINE}Hardware & Browser Validation Demonstration{Colors.ENDC}")
+
+        scenarios = [
+            {
+                "name": "Insufficient Hardware Detection",
+                "description": "Device with insufficient CPU and RAM",
+                "data": {
+                    "user_id": self.demo_user_id,
+                    "device_fingerprint": f"fp_weak_device_{uuid.uuid4().hex[:8]}",
+                    "hardware_info": {
+                        "cpu_cores": 1,  # Below minimum
+                        "ram_gb": 2.0,   # Below minimum
+                        "screen_resolution": "800x600",
+                        "platform": "Win32"
+                    }
+                },
+                "expected": "hardware validation failure"
+            },
+            {
+                "name": "Automation Tool Detection",
+                "description": "Browser automation detected via User-Agent",
+                "data": {
+                    "user_id": self.demo_user_id,
+                    "device_fingerprint": f"fp_automation_{uuid.uuid4().hex[:8]}",
+                    "browser_info": {
+                        "user_agent": "selenium/4.0.0 (automated browser)",
+                        "has_plugins": False,
+                        "plugin_count": 0,
+                        "has_webgl": False,
+                        "has_canvas": True,
+                        "screen_depth": 24,
+                        "languages": []
+                    }
+                },
+                "expected": "automation detection"
+            }
+        ]
+
+        all_passed = True
+
+        for scenario in scenarios:
+            print(f"\n   Testing: {scenario['name']}")
+            print_info(scenario['description'])
+
+            try:
+                response = self.session.post(
+                    f"{IDROCK_URL}/api/v1/devices/register",
+                    json=scenario['data'],
+                    headers={"Content-Type": "application/json"}
+                )
+
+                if response.status_code == 200:
+                    result = response.json()
+                    risk_assessment = result.get('risk_assessment', {})
+
+                    print_success(f"Validation completed - demonstrating {scenario['expected']}")
+                    print_device_info(result)
+
+                else:
+                    print_error(f"Validation test failed with status {response.status_code}", response.text[:200])
+                    all_passed = False
+
+            except Exception as e:
+                print_error(f"Hardware/browser validation test failed: {scenario['name']}", str(e))
+                all_passed = False
+
+        return all_passed
+
     def test_api_documentation(self) -> bool:
         """Test API documentation availability"""
-        print_step(6, "Testing API Documentation Access")
-        
+        print_step(7, "Testing API Documentation Access")
+
         try:
             # Test Swagger UI
             print_info("Checking Swagger UI documentation...")
             docs_response = self.session.get(f"{IDROCK_URL}/docs")
-            
+
             if docs_response.status_code == 200:
                 print_success("Swagger UI documentation is available")
                 print_info(f"Access at: {IDROCK_URL}/docs")
             else:
                 print_warning(f"Swagger UI not available (status: {docs_response.status_code})")
-            
+
             # Test OpenAPI specification
             print_info("Checking OpenAPI specification...")
             openapi_response = self.session.get(f"{IDROCK_URL}/openapi.json")
-            
+
             if openapi_response.status_code == 200:
                 openapi_spec = openapi_response.json()
                 print_success("OpenAPI specification is available")
@@ -572,9 +1055,9 @@ class IDROCKDemoRunner:
                 print_info(f"Access at: {IDROCK_URL}/openapi.json")
             else:
                 print_warning(f"OpenAPI spec not available (status: {openapi_response.status_code})")
-            
+
             return True
-            
+
         except Exception as e:
             print_error("Failed to check API documentation", str(e))
             return False
@@ -596,6 +1079,7 @@ class IDROCKDemoRunner:
             ("Risk Assessment Scenarios", self.test_risk_scenarios),
             ("Integrated Login Testing", self.test_integrated_login),
             ("Security History & Statistics", self.view_security_history),
+            ("Advanced Security Features", self.test_advanced_security_features),
             ("API Documentation", self.test_api_documentation)
         ]
         
