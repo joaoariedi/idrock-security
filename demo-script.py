@@ -304,29 +304,32 @@ class IDROCKDemoRunner:
             return False
     
     def test_risk_scenarios(self) -> bool:
-        """Test three different risk assessment scenarios"""
+        """Test four specific risk assessment scenarios demonstrating device tracking and security progression"""
         print_step(3, "Testing Risk Assessment Scenarios")
         
+        # Fixed device fingerprint for sequential scenarios to track same device
+        shared_device_fingerprint = f"fp_demo_device_{uuid.uuid4().hex[:8]}"
+
         scenarios = [
             {
-                "name": "Scenario A: Residential IP from US (REVIEW due to new device)",
-                "description": "Clean residential IP from US ISP with new device triggers REVIEW for verification",
+                "name": "Scenario A: First Login from a New Device",
+                "description": "User logs in for the first time from a new device (4-core, 16GB RAM computer) using Chrome from São Paulo, Brazil",
                 "data": {
                     "user_id": self.demo_user_id,
-                    "ip_address": "73.162.241.5",
-                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                    "ip_address": "187.95.17.147",  # São Paulo, Brazil
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                     "session_data": {
                         "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-                        "device_fingerprint": "fp_clean_residential_device",
+                        "device_fingerprint": shared_device_fingerprint,
                         "additional_data": {
                             "browser": "Chrome",
                             "screen_resolution": "1920x1080",
-                            "timezone": "UTC-5",
+                            "timezone": "America/Sao_Paulo",
                             "platform": "Windows",
-                            "latitude": 40.7128,
-                            "longitude": -74.0060,
+                            "latitude": -23.5505,  # São Paulo coordinates
+                            "longitude": -46.6333,
                             "hardware_info": {
-                                "cpu_cores": 8,
+                                "cpu_cores": 4,
                                 "ram_gb": 16.0,
                                 "screen_resolution": "1920x1080",
                                 "platform": "Win32"
@@ -337,7 +340,7 @@ class IDROCKDemoRunner:
                                 "has_webgl": True,
                                 "has_canvas": True,
                                 "screen_depth": 24,
-                                "languages": ["en-US", "en"]
+                                "languages": ["pt-BR", "en-US"]
                             }
                         }
                     },
@@ -345,80 +348,132 @@ class IDROCKDemoRunner:
                         "action_type": "login",
                         "additional_context": {
                             "login_attempt_count": 1,
-                            "last_login": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat().replace('+00:00', 'Z')
+                            "is_new_device": True,
+                            "login_method": "password"
                         }
                     }
                 },
-                "expected_risk": "REVIEW"  # Clean IP with new device should trigger REVIEW for verification
+                "expected_risk": "REVIEW"  # New device should trigger REVIEW for additional verification
             },
             {
-                "name": "Scenario B: Medium-High Risk (VPN/Proxy)",
-                "description": "VPN/Proxy detected from different country",
+                "name": "Scenario B: Second Login from the Same Device",
+                "description": "User logs in again from the same device used in Scenario A - system recognizes it as trusted",
                 "data": {
                     "user_id": self.demo_user_id,
-                    "ip_address": "45.76.97.227",
-                    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                    "ip_address": "187.95.17.147",  # Same IP as Scenario A
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                     "session_data": {
-                        "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-                        "device_fingerprint": "fp_vpn_user_device",
+                        "timestamp": (datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat().replace('+00:00', 'Z'),
+                        "device_fingerprint": shared_device_fingerprint,  # Same device as Scenario A
                         "additional_data": {
                             "browser": "Chrome",
-                            "screen_resolution": "1366x768",
-                            "timezone": "UTC+1",
-                            "platform": "Linux",
-                            "vpn_detected": True,
-                            "latitude": 52.5200,
-                            "longitude": 13.4050,
+                            "screen_resolution": "1920x1080",
+                            "timezone": "America/Sao_Paulo",
+                            "platform": "Windows",
+                            "latitude": -23.5505,  # Same location
+                            "longitude": -46.6333,
                             "hardware_info": {
                                 "cpu_cores": 4,
-                                "ram_gb": 8.0,
-                                "screen_resolution": "1366x768",
-                                "platform": "Linux x86_64"
+                                "ram_gb": 16.0,
+                                "screen_resolution": "1920x1080",
+                                "platform": "Win32"
                             },
                             "browser_environment": {
                                 "has_plugins": True,
-                                "plugin_count": 3,
+                                "plugin_count": 5,
                                 "has_webgl": True,
                                 "has_canvas": True,
                                 "screen_depth": 24,
-                                "languages": ["de-DE", "en"]
+                                "languages": ["pt-BR", "en-US"]
                             }
                         }
                     },
                     "context": {
-                        "action_type": "checkout",
-                        "amount": 299.99,
+                        "action_type": "login",
                         "additional_context": {
-                            "cart_value": 299.99,
-                            "payment_method": "credit_card",
-                            "items_count": 2,
-                            "first_purchase": False
+                            "login_attempt_count": 2,
+                            "is_trusted_device": True,
+                            "login_method": "password",
+                            "last_login": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
                         }
                     }
                 },
-                "expected_risk": "DENY"  # VPN IPs are often blocked for high-risk actions
+                "expected_risk": "ALLOW"  # Trusted device should allow login
             },
             {
-                "name": "Scenario C: High Risk (DENY)",
-                "description": "Known malicious/hosting IP with suspicious patterns",
+                "name": "Scenario C: Access from Suspicious Location via VPN/TOR",
+                "description": "User attempts login from same device but IP is now from Japan, flagged as VPN/TOR - impossible travel detected",
                 "data": {
                     "user_id": self.demo_user_id,
-                    "ip_address": "185.220.100.240",
-                    "user_agent": "curl/7.68.0",
+                    "ip_address": "45.76.97.227",  # Japan, flagged as VPN/TOR
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                     "session_data": {
-                        "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-                        "device_fingerprint": "fp_suspicious_automation",
+                        "timestamp": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat().replace('+00:00', 'Z'),
+                        "device_fingerprint": shared_device_fingerprint,  # Same device but different location
+                        "additional_data": {
+                            "browser": "Chrome",
+                            "screen_resolution": "1920x1080",
+                            "timezone": "Asia/Tokyo",
+                            "platform": "Windows",
+                            "latitude": 35.6762,  # Tokyo coordinates
+                            "longitude": 139.6503,
+                            "vpn_detected": True,
+                            "tor_detected": True,
+                            "hardware_info": {
+                                "cpu_cores": 4,
+                                "ram_gb": 16.0,
+                                "screen_resolution": "1920x1080",
+                                "platform": "Win32"
+                            },
+                            "browser_environment": {
+                                "has_plugins": True,
+                                "plugin_count": 5,
+                                "has_webgl": True,
+                                "has_canvas": True,
+                                "screen_depth": 24,
+                                "languages": ["ja-JP", "en-US"]
+                            }
+                        }
+                    },
+                    "context": {
+                        "action_type": "login",
+                        "additional_context": {
+                            "login_attempt_count": 3,
+                            "impossible_travel": True,
+                            "login_method": "password",
+                            "previous_location": {
+                                "country": "BR",
+                                "city": "São Paulo",
+                                "timestamp": (datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat().replace('+00:00', 'Z')
+                            }
+                        }
+                    }
+                },
+                "expected_risk": "DENY"  # VPN + impossible travel should be denied
+            },
+            {
+                "name": "Scenario D: Automated Login Attempt via cURL",
+                "description": "Automated login attempt using curl command-line tool - system detects automation and blocks as malicious",
+                "data": {
+                    "user_id": self.demo_user_id,
+                    "ip_address": "45.76.97.227",  # Same suspicious IP
+                    "user_agent": "curl/7.68.0",  # Clear automation signature
+                    "session_data": {
+                        "timestamp": (datetime.now(timezone.utc) + timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+                        "device_fingerprint": f"fp_automation_attempt_{uuid.uuid4().hex[:8]}",
                         "additional_data": {
                             "browser": "Unknown",
                             "automation_detected": True,
                             "screen_resolution": "unknown",
-                            "suspicious_patterns": ["rapid_requests", "bot_like_behavior"],
-                            "latitude": 37.7749,
-                            "longitude": -122.4194,
+                            "timezone": "unknown",
+                            "platform": "Unknown",
+                            "suspicious_patterns": ["curl_user_agent", "no_browser_environment", "rapid_requests"],
+                            "latitude": 35.6762,  # Same location as previous attempt
+                            "longitude": 139.6503,
                             "hardware_info": {
                                 "cpu_cores": 1,
-                                "ram_gb": 2.0,
-                                "screen_resolution": "1024x768",
+                                "ram_gb": 1.0,
+                                "screen_resolution": "unknown",
                                 "platform": "Unknown"
                             },
                             "browser_environment": {
@@ -426,76 +481,23 @@ class IDROCKDemoRunner:
                                 "plugin_count": 0,
                                 "has_webgl": False,
                                 "has_canvas": False,
-                                "screen_depth": 16,
+                                "screen_depth": 0,
                                 "languages": []
-                            }
-                        }
-                    },
-                    "context": {
-                        "action_type": "sensitive_action",
-                        "additional_context": {
-                            "action": "password_reset",
-                            "previous_attempts": 5,
-                            "time_since_last_attempt": "30_seconds"
-                        }
-                    }
-                },
-                "expected_risk": "DENY"
-            },
-            {
-                "name": "Scenario D: Advanced Device Fingerprinting",
-                "description": "Comprehensive device fingerprinting with Canvas/WebGL/Audio features",
-                "data": {
-                    "user_id": self.demo_user_id,
-                    "ip_address": "203.0.113.100",
-                    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    "session_data": {
-                        "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-                        "device_fingerprint": f"fp_advanced_fingerprint_{uuid.uuid4().hex[:8]}",
-                        "additional_data": {
-                            "browser": "Chrome",
-                            "screen_resolution": "2560x1600",
-                            "timezone": "UTC-8",
-                            "platform": "MacIntel",
-                            "latitude": 37.7749,
-                            "longitude": -122.4194,
-                            "hardware_info": {
-                                "cpu_cores": 8,
-                                "ram_gb": 32.0,
-                                "screen_resolution": "2560x1600",
-                                "platform": "MacIntel",
-                                "timezone": "-480",
-                                "language": "en-US"
-                            },
-                            "browser_environment": {
-                                "has_plugins": True,
-                                "plugin_count": 7,
-                                "has_webgl": True,
-                                "has_canvas": True,
-                                "screen_depth": 30,
-                                "languages": ["en-US", "en", "es"],
-                                "navigator_properties": {
-                                    "webdriver": False,
-                                    "hardwareConcurrency": 8,
-                                    "deviceMemory": 8,
-                                    "maxTouchPoints": 0
-                                },
-                                "canvas_fingerprint": "sha256:a1b2c3d4e5f6...",
-                                "webgl_fingerprint": "sha256:f6e5d4c3b2a1...",
-                                "audio_fingerprint": "sha256:1a2b3c4d5e6f..."
                             }
                         }
                     },
                     "context": {
                         "action_type": "login",
                         "additional_context": {
-                            "login_method": "password",
-                            "device_remembered": False,
-                            "2fa_enabled": True
+                            "login_attempt_count": 4,
+                            "automation_attempt": True,
+                            "login_method": "automated",
+                            "request_rate": "high",
+                            "user_agent_suspicious": True
                         }
                     }
                 },
-                "expected_risk": "ALLOW"
+                "expected_risk": "DENY"  # Automation should be blocked
             }
         ]
         
