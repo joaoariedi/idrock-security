@@ -53,7 +53,8 @@ class TravelDetectionService:
         current_time: Optional[datetime] = None
     ) -> Dict[str, Any]:
         """
-        Analyze travel feasibility for a user based on their latest access.
+        Analyze travel feasibility for a user based on their latest login.
+        Only performs analysis if user has at least one previous login with location data.
 
         Args:
             db: Database session
@@ -76,6 +77,29 @@ class TravelDetectionService:
         if current_time is None:
             current_time = datetime.utcnow()
 
+        # Get the count of previous logins for this user
+        from app.models.risk_assessment import RiskAssessment
+        login_count = db.query(RiskAssessment).filter(
+            RiskAssessment.user_id == user_id,
+            RiskAssessment.action_type == "login"
+        ).count()
+
+        # Only perform travel analysis if this is at least the second login
+        if login_count < 1:  # This will be the 2nd login if we already have 1
+            return {
+                "is_feasible": True,
+                "risk_level": "ALLOW",
+                "travel_speed_kmh": 0.0,
+                "distance_km": 0.0,
+                "time_diff_hours": 0.0,
+                "previous_location": None,
+                "analysis_details": {
+                    "reason": "insufficient_login_history",
+                    "message": "Need at least two logins to perform travel analysis",
+                    "login_count": login_count
+                }
+            }
+
         # Get the latest access for the user
         latest_access = DeviceAccessService.get_latest_user_access(db, user_id)
 
@@ -90,7 +114,7 @@ class TravelDetectionService:
                 "previous_location": None,
                 "analysis_details": {
                     "reason": "no_previous_location_data",
-                    "message": "No previous location data available for comparison"
+                    "message": "Previous login exists but lacks location data"
                 }
             }
 
