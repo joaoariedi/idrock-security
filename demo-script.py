@@ -309,8 +309,8 @@ class IDROCKDemoRunner:
         
         scenarios = [
             {
-                "name": "Scenario A: Low Risk (ALLOW)",
-                "description": "Clean residential IP from trusted location",
+                "name": "Scenario A: New Device from Private IP (DENY)",
+                "description": "Private IP (192.168.x.x) with new device - triggers caution despite clean reputation",
                 "data": {
                     "user_id": self.demo_user_id,
                     "ip_address": "192.168.1.100",
@@ -349,7 +349,7 @@ class IDROCKDemoRunner:
                         }
                     }
                 },
-                "expected_risk": "DENY"  # Changed from ALLOW - new devices from residential IPs are treated with caution
+                "expected_risk": "DENY"  # Private IPs get clean reputation but new device triggers DENY
             },
             {
                 "name": "Scenario B: Medium-High Risk (VPN/Proxy)",
@@ -575,7 +575,7 @@ class IDROCKDemoRunner:
         
         login_scenarios = [
             {
-                "name": "New Device Login - Expected Block",
+                "name": "Private IP Login with New Device (Expected Block)",
                 "headers": {"X-Forwarded-For": "192.168.1.100"},
                 "data": {
                     "username": self.demo_user_id,
