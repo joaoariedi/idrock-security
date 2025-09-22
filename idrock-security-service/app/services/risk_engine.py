@@ -71,10 +71,10 @@ class RiskEngine:
                 advanced_analysis = await self._perform_advanced_analysis(request, db)
                 all_risk_factors.update(advanced_analysis.get("risk_factors", {}))
 
-            # Calculate final confidence score
-            confidence_score = self._calculate_comprehensive_score(
+            # Calculate final confidence score using weighted calculation
+            confidence_score = self._calculate_confidence_score_weighted(
                 ip_score,
-                advanced_analysis.get("scores", {}),
+                advanced_analysis,
                 enable_advanced_features
             )
 
@@ -322,6 +322,190 @@ class RiskEngine:
 
         return None
 
+    def _calculate_weighted_score(
+        self,
+        factor_scores: Dict[str, Dict[str, float]],
+        enable_advanced: bool
+    ) -> int:
+        """
+        Calculate weighted confidence score using factor scores and weights
+
+        Args:
+            factor_scores: Dict mapping factor names to {"score": float, "weight": float}
+            enable_advanced: Whether advanced features are enabled
+
+        Returns:
+            Weighted confidence score (0-100)
+        """
+        if not factor_scores:
+            return 50  # Fallback score
+
+        total_weighted_score = 0.0
+        total_weight = 0.0
+
+        for factor_name, factor_data in factor_scores.items():
+            score = factor_data.get("score", 0.0)
+            weight = factor_data.get("weight", 0.0)
+
+            # Skip factors with zero weight or invalid scores
+            if weight <= 0 or not (0 <= score <= 100):
+                continue
+
+            total_weighted_score += score * weight
+            total_weight += weight
+
+        # Avoid division by zero
+        if total_weight == 0:
+            return 50  # Fallback score
+
+        # Calculate weighted average and ensure it's in valid range
+        weighted_score = total_weighted_score / total_weight
+        return max(0, min(100, int(round(weighted_score))))
+
+    def _apply_penalty_adjustments(
+        self,
+        base_score: int,
+        penalty_scores: Dict[str, int]
+    ) -> int:
+        """
+        Apply penalty adjustments to base score while maintaining bounds
+
+        Args:
+            base_score: Base confidence score
+            penalty_scores: Dict of penalty adjustments
+
+        Returns:
+            Adjusted score with penalties applied
+        """
+        adjusted_score = base_score
+
+        for penalty_adjustment in penalty_scores.values():
+            adjusted_score += penalty_adjustment
+
+        return max(0, min(100, adjusted_score))
+
+    def _calculate_confidence_score_weighted(
+        self,
+        ip_score: int,
+        advanced_analysis: Dict[str, Any],
+        enable_advanced: bool
+    ) -> int:
+        """
+        Calculate confidence score using weighted equation
+
+        Args:
+            ip_score: Base IP reputation score (0-100)
+            advanced_analysis: Advanced security analysis results
+            enable_advanced: Whether advanced features are enabled
+
+        Returns:
+            Weighted confidence score (0-100)
+        """
+        if not enable_advanced:
+            return ip_score
+
+        # Extract factor scores with their weights
+        factor_scores = self._extract_factor_scores(ip_score, advanced_analysis)
+
+        # Apply penalty adjustments for specific security violations
+        penalty_scores = advanced_analysis.get("scores", {})
+
+        # Calculate weighted base score
+        weighted_score = self._calculate_weighted_score(factor_scores, enable_advanced)
+
+        # Apply penalties for specific violations (backward compatibility)
+        final_score = self._apply_penalty_adjustments(weighted_score, penalty_scores)
+
+        return final_score
+
+    def _extract_factor_scores(
+        self,
+        ip_score: int,
+        advanced_analysis: Dict[str, Any]
+    ) -> Dict[str, Dict[str, float]]:
+        """
+        Extract factor scores and weights from analysis results
+
+        Args:
+            ip_score: Base IP reputation score
+            advanced_analysis: Advanced security analysis results
+
+        Returns:
+            Dict mapping factor names to score and weight data
+        """
+        factor_scores = {}
+        risk_factors = advanced_analysis.get("risk_factors", {})
+
+        # IP reputation factor (primary factor)
+        factor_scores["ip_reputation"] = {
+            "score": float(ip_score),
+            "weight": 0.6
+        }
+
+        # Device trust factor
+        if "device_analysis" in risk_factors:
+            device_info = risk_factors["device_analysis"]
+            trust_score = 80.0 if device_info.get("is_trusted", False) else 40.0
+
+            # Adjust score based on device age
+            device_age_days = device_info.get("device_age_days", 0)
+            if device_age_days > 30:  # Bonus for established devices
+                trust_score = min(100.0, trust_score + 10.0)
+            elif device_age_days > 7:  # Slight bonus for week-old devices
+                trust_score = min(100.0, trust_score + 5.0)
+
+            factor_scores["device_trust"] = {
+                "score": trust_score,
+                "weight": 0.2
+            }
+
+        # Travel feasibility factor
+        if "travel_analysis" in risk_factors:
+            travel_info = risk_factors["travel_analysis"]
+            travel_score = 80.0 if travel_info.get("is_feasible", True) else 10.0
+
+            factor_scores["travel_feasibility"] = {
+                "score": travel_score,
+                "weight": 0.15
+            }
+
+        # Additional security factors (smaller weights)
+        remaining_weight = max(0.05, 1.0 - sum(f["weight"] for f in factor_scores.values()))
+        additional_factors = []
+
+        # Temporal behavior
+        if "temporal_anomaly" in risk_factors:
+            temporal_data = risk_factors["temporal_anomaly"]
+            anomaly_score = temporal_data.get("score", 0.0)
+            # Convert anomaly score (higher = more anomalous) to confidence score
+            temporal_score = max(10.0, 100.0 - (anomaly_score * 100.0))
+            additional_factors.append(("temporal_behavior", temporal_score))
+
+        # Hardware validation
+        if "hardware_validation" in risk_factors:
+            hw_data = risk_factors["hardware_validation"]
+            # Assume hardware validation returns a risk level
+            hw_score = 70.0  # Default moderate score
+            additional_factors.append(("hardware_validation", hw_score))
+
+        # Browser validation
+        if "browser_validation" in risk_factors:
+            browser_data = risk_factors["browser_validation"]
+            # Assume browser validation returns legitimacy score
+            browser_score = 60.0  # Default moderate score
+            additional_factors.append(("browser_validation", browser_score))
+
+        # Distribute remaining weight among additional factors
+        if additional_factors:
+            individual_weight = remaining_weight / len(additional_factors)
+            for factor_name, score in additional_factors:
+                factor_scores[factor_name] = {
+                    "score": score,
+                    "weight": individual_weight
+                }
+
+        return factor_scores
+
     def _calculate_comprehensive_score(
         self,
         base_ip_score: int,
@@ -332,14 +516,9 @@ class RiskEngine:
         if not enable_advanced:
             return base_ip_score
 
-        total_score = base_ip_score
-
-        # Apply advanced feature penalties/bonuses
-        for score_adjustment in advanced_scores.values():
-            total_score += score_adjustment
-
-        # Ensure score is within valid range
-        return max(0, min(100, total_score))
+        # For backward compatibility, maintain the current penalty-based approach
+        # while preparing for transition to full weighted scoring
+        return self._apply_penalty_adjustments(base_ip_score, advanced_scores)
 
     def _determine_comprehensive_risk_level(
         self,
@@ -360,7 +539,7 @@ class RiskEngine:
         advanced_risk_factors: Dict[str, Any],
         enable_advanced: bool
     ) -> List[RiskFactor]:
-        """Create comprehensive risk factor list"""
+        """Create comprehensive risk factor list with consistent weights"""
         risk_factors = []
 
         # IP reputation factor (always included)
@@ -375,36 +554,109 @@ class RiskEngine:
             )
         )
 
-        # Advanced security factors
+        # Advanced security factors with consistent weight calculation
         if enable_advanced and advanced_risk_factors:
+            # Get the factor scores used in calculation for consistency
+            factor_scores = self._extract_factor_scores(ip_score, {"risk_factors": advanced_risk_factors})
+
             if "device_analysis" in advanced_risk_factors:
                 device_info = advanced_risk_factors["device_analysis"]
+                device_factor = factor_scores.get("device_trust", {})
+                calculated_score = int(device_factor.get("score", 40))
+
+                # Enhanced details with device age information
+                device_age_days = device_info.get("device_age_days", 0)
+                trust_status = "trusted" if device_info.get("is_trusted", False) else "new/untrusted"
+                age_info = f" (age: {device_age_days} days)" if device_age_days > 0 else ""
+
                 risk_factors.append(
                     RiskFactor(
                         factor="device_trust",
-                        score=80 if device_info["is_trusted"] else 40,
+                        score=calculated_score,
                         weight=0.2,
-                        details=f"Device trust status: {'trusted' if device_info['is_trusted'] else 'new/untrusted'}",
+                        details=f"Device trust status: {trust_status}{age_info}",
                         proxycheck_data=device_info
                     )
                 )
 
             if "travel_analysis" in advanced_risk_factors:
                 travel_info = advanced_risk_factors["travel_analysis"]
-                travel_score = 20 if travel_info["is_feasible"] else 0
+                travel_factor = factor_scores.get("travel_feasibility", {})
+                calculated_score = int(travel_factor.get("score", 10))
+
                 risk_factors.append(
                     RiskFactor(
                         factor="travel_feasibility",
-                        score=travel_score,
+                        score=calculated_score,
                         weight=0.15,
-                        details=f"Travel analysis: {travel_info['analysis_details']['message']}",
+                        details=f"Travel analysis: {travel_info.get('analysis_details', {}).get('message', 'Travel analysis performed')}",
                         proxycheck_data=travel_info
                     )
                 )
 
-            # Add other advanced factors as needed
+            # Temporal anomaly factor
+            if "temporal_anomaly" in advanced_risk_factors:
+                temporal_factor = factor_scores.get("temporal_behavior", {})
+                if temporal_factor:
+                    temporal_data = advanced_risk_factors["temporal_anomaly"]
+                    calculated_score = int(temporal_factor.get("score", 50))
+
+                    risk_factors.append(
+                        RiskFactor(
+                            factor="temporal_behavior",
+                            score=calculated_score,
+                            weight=temporal_factor.get("weight", 0.05),
+                            details=temporal_data.get("description", "Temporal behavior analysis"),
+                            proxycheck_data=temporal_data
+                        )
+                    )
+
+            # Hardware validation factor
+            if "hardware_validation" in advanced_risk_factors:
+                hw_factor = factor_scores.get("hardware_validation", {})
+                if hw_factor:
+                    hw_data = advanced_risk_factors["hardware_validation"]
+                    calculated_score = int(hw_factor.get("score", 70))
+
+                    risk_factors.append(
+                        RiskFactor(
+                            factor="hardware_validation",
+                            score=calculated_score,
+                            weight=hw_factor.get("weight", 0.05),
+                            details="Hardware specification validation",
+                            proxycheck_data=hw_data
+                        )
+                    )
+
+            # Browser validation factor
+            if "browser_validation" in advanced_risk_factors:
+                browser_factor = factor_scores.get("browser_validation", {})
+                if browser_factor:
+                    browser_data = advanced_risk_factors["browser_validation"]
+                    calculated_score = int(browser_factor.get("score", 60))
+
+                    risk_factors.append(
+                        RiskFactor(
+                            factor="browser_validation",
+                            score=calculated_score,
+                            weight=browser_factor.get("weight", 0.05),
+                            details="Browser legitimacy validation",
+                            proxycheck_data=browser_data
+                        )
+                    )
+
+            # Add other detected anomalies with appropriate weights
+            remaining_factors = []
             for factor_name, factor_data in advanced_risk_factors.items():
-                if factor_name.endswith("_detected") and factor_data.get("detected"):
+                if (factor_name.endswith("_detected") and
+                    factor_data.get("detected") and
+                    factor_name not in ["temporal_anomaly", "hardware_validation", "browser_validation"]):
+                    remaining_factors.append((factor_name, factor_data))
+
+            # Distribute small weights among remaining factors
+            if remaining_factors:
+                remaining_weight = max(0.01, 0.05 / len(remaining_factors))
+                for factor_name, factor_data in remaining_factors:
                     severity_score = {"low": 60, "medium": 40, "high": 20}.get(
                         factor_data.get("severity", "medium"), 40
                     )
@@ -412,7 +664,7 @@ class RiskEngine:
                         RiskFactor(
                             factor=factor_name,
                             score=severity_score,
-                            weight=0.05,
+                            weight=remaining_weight,
                             details=factor_data.get("description", f"{factor_name} detected"),
                             proxycheck_data=factor_data
                         )
