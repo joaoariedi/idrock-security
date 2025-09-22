@@ -349,7 +349,7 @@ class IDROCKDemoRunner:
                         }
                     }
                 },
-                "expected_risk": "ALLOW"
+                "expected_risk": "DENY"  # Changed from ALLOW - new devices from residential IPs are treated with caution
             },
             {
                 "name": "Scenario B: Medium-High Risk (VPN/Proxy)",
@@ -575,7 +575,7 @@ class IDROCKDemoRunner:
         
         login_scenarios = [
             {
-                "name": "Low Risk Login",
+                "name": "New Device Login - Expected Block",
                 "headers": {"X-Forwarded-For": "192.168.1.100"},
                 "data": {
                     "username": self.demo_user_id,
@@ -591,7 +591,7 @@ class IDROCKDemoRunner:
                         "login_source": "web_app"
                     }
                 },
-                "expected_outcome": "success"
+                "expected_outcome": "blocked_or_additional_verification"  # Changed: new devices are now blocked
             },
             {
                 "name": "High Risk Login (VPN) - Expected Block",
