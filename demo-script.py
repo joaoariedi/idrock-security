@@ -309,8 +309,8 @@ class IDROCKDemoRunner:
         
         scenarios = [
             {
-                "name": "Scenario A: New Device from Private IP (DENY)",
-                "description": "Private IP (192.168.x.x) with new device - triggers caution despite clean reputation",
+                "name": "Scenario A: Private IP with Mock Data (DENY)",
+                "description": "Private IP (192.168.x.x) uses mock data (100/100) but new device triggers DENY",
                 "data": {
                     "user_id": self.demo_user_id,
                     "ip_address": "192.168.1.100",
