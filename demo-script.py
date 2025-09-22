@@ -545,17 +545,59 @@ class IDROCKDemoRunner:
                     else:
                         print_warning(f"Risk level mismatch - Expected: {expected_risk}, Actual: {actual_risk}")
 
-                    # Show detailed factors with enhanced formatting
+                    # Show detailed factors with enhanced formatting and data analysis
                     risk_factors = assessment.get('risk_factors', [])
                     if risk_factors:
                         print_info("Detailed Risk Factors Analysis:")
+                        current_ip = scenario['data']['ip_address']
+                        print(f"   📊 Analysis for request from IP: {current_ip}")
+
                         for factor in risk_factors:
                             factor_name = factor.get('factor', 'unknown')
                             details = factor.get('details', 'No details available')
                             score = factor.get('score', 0)
                             weight = factor.get('weight', 0)
+                            proxycheck_data = factor.get('proxycheck_data', {})
+
                             print(f"   🔍 {factor_name.replace('_', ' ').title()}: {score}/100 (weight: {weight:.1f})")
                             print(f"      {details}")
+
+                            # Add specific data analysis for each factor
+                            if factor_name == 'ip_reputation' and proxycheck_data:
+                                country = proxycheck_data.get('country', 'Unknown')
+                                provider = proxycheck_data.get('provider', 'Unknown')
+                                ip_type = proxycheck_data.get('type', 'Unknown')
+                                risk_score = proxycheck_data.get('risk', 0)
+                                vpn_status = proxycheck_data.get('vpn', 'unknown')
+                                proxy_status = proxycheck_data.get('proxy', 'unknown')
+                                print(f"      📍 Location: {country} | Provider: {provider}")
+                                print(f"      🔗 Connection Type: {ip_type} | Risk Score: {risk_score}/100")
+                                if vpn_status != 'unknown':
+                                    print(f"      🛡️  VPN Status: {vpn_status} | Proxy Status: {proxy_status}")
+
+                            elif factor_name == 'device_trust' and proxycheck_data:
+                                device_id = proxycheck_data.get('device_id', 'N/A')
+                                is_new = proxycheck_data.get('is_new_device', False)
+                                is_trusted = proxycheck_data.get('is_trusted', False)
+                                device_age = proxycheck_data.get('device_age_days', 0)
+                                print(f"      📱 Device ID: {device_id} | Age: {device_age} days")
+                                print(f"      🔐 Status: {'New Device' if is_new else 'Known Device'} | Trust: {'Trusted' if is_trusted else 'Untrusted'}")
+
+                            elif factor_name == 'travel_feasibility' and proxycheck_data:
+                                is_feasible = proxycheck_data.get('is_feasible', True)
+                                travel_speed = proxycheck_data.get('travel_speed_kmh', 0)
+                                distance = proxycheck_data.get('distance_km', 0)
+                                print(f"      ✈️  Travel Speed: {travel_speed:.1f} km/h | Distance: {distance:.1f} km")
+                                print(f"      🚨 Feasible: {'Yes' if is_feasible else 'No (Impossible Travel Detected)'}")
+
+                            elif 'detected' in factor_name and proxycheck_data:
+                                detected = proxycheck_data.get('detected', False)
+                                severity = proxycheck_data.get('severity', 'unknown')
+                                description = proxycheck_data.get('description', 'No details')
+                                print(f"      ⚠️  Detection Status: {'Detected' if detected else 'Not Detected'}")
+                                print(f"      📊 Severity: {severity.title()} | Details: {description}")
+
+                            print()  # Add spacing between factors
                     
                 else:
                     print_error(f"API request failed with status {response.status_code}", response.text[:200])
