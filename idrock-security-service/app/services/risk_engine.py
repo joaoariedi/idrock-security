@@ -175,6 +175,22 @@ class RiskEngine:
                 device_fingerprint=device_fingerprint
             )
 
+            # Upgrade device trust for existing devices (second access and beyond)
+            if not is_new_device and not device.is_trusted:
+                try:
+                    # Upgrade to trusted status on second successful access
+                    DeviceService.update_trust_status(
+                        db=db,
+                        device_id=device.id,
+                        is_trusted=True,
+                        admin_user="system_auto_upgrade"
+                    )
+                    # Refresh device object to get updated trust status
+                    device = DeviceService.get_device_by_id(db, device.id)
+                except Exception as e:
+                    # Log error but don't fail the assessment
+                    pass
+
             analysis["risk_factors"]["device_analysis"] = {
                 "device_id": device.id,
                 "is_new_device": is_new_device,
