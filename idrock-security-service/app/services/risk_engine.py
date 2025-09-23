@@ -68,7 +68,7 @@ class RiskEngine:
 
             # Advanced security features (if enabled)
             if enable_advanced_features:
-                advanced_analysis = await self._perform_advanced_analysis(request, db)
+                advanced_analysis = await self._perform_advanced_analysis(request, db, ip_analysis)
                 all_risk_factors.update(advanced_analysis.get("risk_factors", {}))
 
             # Calculate final confidence score using weighted calculation
@@ -150,7 +150,8 @@ class RiskEngine:
     async def _perform_advanced_analysis(
         self,
         request: IdentityVerificationRequest,
-        db: Session
+        db: Session,
+        ip_analysis: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Perform advanced security analysis including device tracking,
@@ -272,6 +273,11 @@ class RiskEngine:
 
             # Record access for future analysis
             if device and location_data:
+                # Extract country and city from IP analysis if available
+                country = ip_analysis.get("country") if ip_analysis else None
+                city = ip_analysis.get("city") if ip_analysis else None
+                asn = ip_analysis.get("asn") if ip_analysis else None
+
                 DeviceAccessService.record_access(
                     db=db,
                     device_id=device.id,
@@ -279,10 +285,10 @@ class RiskEngine:
                     location_data={
                         "lat": location_data[0],
                         "lng": location_data[1],
-                        "country": None,  # Could be enhanced with geocoding
-                        "city": None
+                        "country": country,  # Now populated from IP analysis
+                        "city": city         # Now populated from IP analysis
                     },
-                    asn=None,  # Could be enhanced with ASN lookup
+                    asn=asn,  # Also enhanced
                     hardware_info=hardware_info,
                     browser_info={"user_agent": request.user_agent},
                     risk_factors=analysis["risk_factors"]
