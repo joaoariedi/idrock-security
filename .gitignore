@@ -124,3 +124,9 @@ dev/
 scratch/
 notes.txt
 TODO.md
+
+# Implementation Status Files
+.implementation_status.md
+.work_in_progress.md
+STATUS_*.md
+!STATUS_PROJETO_IDROCK.md

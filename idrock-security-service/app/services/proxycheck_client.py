@@ -47,7 +47,7 @@ class ProxyCheckClient:
             # Prepare query parameters
             params = {
                 "format": "json",
-                "vpn": 1,  # Check for VPN usage
+                "vpn": 3,  # Enhanced VPN detection with detailed provider info
                 "asn": 1,  # Include ASN information
                 "node": 1,  # Include node information
                 "time": 1,  # Include timing information
